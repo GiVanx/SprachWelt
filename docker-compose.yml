@@ -1,0 +1,14 @@
+version: '3'
+services:
+    database:
+        build: .
+        environment:
+            - MONGO_INITDB_DATABASE=sprach-welt
+            - MONGO_INITDB_ROOT_USERNAME=givanx
+            - MONGO_INITDB_ROOT_PASSWORD=root
+        volumes:
+            - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+            - ./mongo-volume:/data/db
+            - ./mongo:/home/mongodb
+        ports:
+            - '27017-27019:27017-27019'
