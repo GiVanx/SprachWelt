@@ -26,10 +26,9 @@ public class TextService {
         return textRepository.save(text);
     }
 
-    public boolean checkWord(Text text, Word word) {
+    public boolean checkWord(String textId, Word word) {
 
-        String id = text.getId();
-        text = textRepository.findById(text.getId()).orElseThrow(() -> new TextNotFound(id));
+        Text text = textRepository.findById(textId).orElseThrow(() -> new TextNotFound(textId));
 
         Word originalWord = textRepository.findByTextIdAndWordId(text.getId(), word.getId());
         return word.getPosition() == originalWord.getPosition();

@@ -30,6 +30,6 @@ public class TextWithGapsService {
                 textWithGaps.add(word.getText());
             }
         }
-        return new TextWithGaps(missingWords, textWithGaps);
+        return new TextWithGaps(text.getId(), missingWords, textWithGaps);
     }
 }
