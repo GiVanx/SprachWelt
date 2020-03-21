@@ -5,8 +5,8 @@ import org.springframework.data.annotation.Id;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Text {
 
+public class Text {
     @Id
     private String id;
 

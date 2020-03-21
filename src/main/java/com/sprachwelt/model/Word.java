@@ -14,6 +14,18 @@ public class Word {
         this.position = position;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
     @Override
     public String toString() {
         return "Word{" +
