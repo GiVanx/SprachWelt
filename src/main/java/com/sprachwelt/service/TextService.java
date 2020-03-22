@@ -48,6 +48,11 @@ public class TextService {
      */
     public boolean checkWord(String textId, WordIdsGroupedByWord wordIdsGroupedByWord, int wordPosition) {
 
+        Text text = getTextByIdWithSubsetOfWordsFoundById(textId, wordIdsGroupedByWord);
+        return text.getWords().stream().anyMatch(word -> word.getPosition() == wordPosition);
+    }
+
+    private Text getTextByIdWithSubsetOfWordsFoundById(String textId, WordIdsGroupedByWord wordIdsGroupedByWord) {
         MatchOperation matchOperation = match(Criteria.where("_id").is(new ObjectId(textId)));
         ProjectionOperation projectionOperation =
                 project().and((AggregationOperationContext context) -> {
@@ -61,12 +66,7 @@ public class TextService {
 
         Aggregation aggregation = newAggregation(matchOperation, projectionOperation);
         AggregationResults<Text> result = mongoTemplate.aggregate(aggregation, "text", Text.class);
-
-        Text text = result.getUniqueMappedResult();
-
-        System.out.println("ALL POSITIONS = " + text.getWords().stream().map(word -> word.getPosition()).collect(Collectors.toList()));
-
-        return text.getWords().stream().anyMatch(word -> word.getPosition() == wordPosition);
+        return result.getUniqueMappedResult();
     }
 
     private List<Word> getWords(String text) {
