@@ -6,11 +6,15 @@ public class Word {
 
     @Id
     private String id;
-    private String text;
+    private String word;
     private Integer position;
 
-    public Word(String text, Integer position) {
-        this.text = text;
+    public Word() {
+    }
+
+    public Word(String id, String word, Integer position) {
+        this.id = id;
+        this.word = word;
         this.position = position;
     }
 
@@ -18,8 +22,8 @@ public class Word {
         return id;
     }
 
-    public String getText() {
-        return text;
+    public String getWord() {
+        return word;
     }
 
     public Integer getPosition() {
@@ -29,7 +33,8 @@ public class Word {
     @Override
     public String toString() {
         return "Word{" +
-                "text='" + text + '\'' +
+                "id=" + id + ", " +
+                "text='" + word + '\'' +
                 ", position=" + position +
                 '}';
     }

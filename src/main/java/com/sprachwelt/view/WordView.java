@@ -1,16 +1,17 @@
 package com.sprachwelt.view;
 
 import com.sprachwelt.model.Word;
+import org.bson.types.ObjectId;
 
 public class WordView {
-    private String textId;
+    private ObjectId textId;
     private Word word;
 
-    public String getTextId() {
+    public ObjectId getTextId() {
         return textId;
     }
 
-    public void setTextId(String textId) {
+    public void setTextId(ObjectId textId) {
         this.textId = textId;
     }
 
