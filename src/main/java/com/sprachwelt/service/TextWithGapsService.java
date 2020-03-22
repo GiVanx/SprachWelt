@@ -4,7 +4,7 @@ import com.sprachwelt.exception.TextNotFound;
 import com.sprachwelt.model.Text;
 import com.sprachwelt.model.TextWithGaps;
 import com.sprachwelt.model.Word;
-import com.sprachwelt.model.WordGroup;
+import com.sprachwelt.model.WordIdsGroupedByWord;
 import com.sprachwelt.repository.TextRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +36,12 @@ public class TextWithGapsService {
     public TextWithGaps create(Text text, int wordPresenceProbabilityPercent) {
 
         String textId = text.getId();
-        text = textRepository.findById(new ObjectId(text.getId())).orElseThrow(() -> new TextNotFound(textId));
+        text = textRepository.findById(text.getId()).orElseThrow(() -> new TextNotFound(textId));
 
-        Map<String, WordGroup> wordGroups = getWordGroups(text);
+        Map<String, WordIdsGroupedByWord> wordGroups = getWordGroups(text);
 
         List<String> textWithGaps = new ArrayList<>();
-        Set<WordGroup> missingWords = new HashSet<>();
+        Set<WordIdsGroupedByWord> missingWords = new HashSet<>();
         Random random = new Random();
 
         for (Word word : text.getWords()) {
@@ -59,14 +59,15 @@ public class TextWithGapsService {
         return new TextWithGaps(text.getId(), missingWords, textWithGaps);
     }
 
-    private Map<String, WordGroup> getWordGroups(Text text) {
+    private Map<String, WordIdsGroupedByWord> getWordGroups(Text text) {
+
         MatchOperation matchOperation = match(Criteria.where("_id").is(new ObjectId(text.getId())));
         UnwindOperation unwindOperation = unwind("words");
         GroupOperation groupOperation = group("words.word").push("words._id").as("wordIds");
 
         Aggregation aggregation= newAggregation(matchOperation, unwindOperation, groupOperation);
-        AggregationResults<WordGroup> result = mongoTemplate.aggregate(aggregation, "text", WordGroup.class);
+        AggregationResults<WordIdsGroupedByWord> result = mongoTemplate.aggregate(aggregation, "text", WordIdsGroupedByWord.class);
 
-        return result.getMappedResults().stream().collect(Collectors.toMap(wordGroup -> wordGroup.getId(), wordGroup -> wordGroup));
+        return result.getMappedResults().stream().collect(Collectors.toMap(wordIdsGroupedByWord -> wordIdsGroupedByWord.getId(), wordIdsGroupedByWord -> wordIdsGroupedByWord));
     }
 }

@@ -1,7 +1,5 @@
 package com.sprachwelt.model;
 
-import org.bson.types.ObjectId;
-
 import java.util.List;
 import java.util.Set;
 
@@ -9,11 +7,11 @@ public class TextWithGaps {
 
     private String textId;
 
-    private Set<WordGroup> missingWords;
+    private Set<WordIdsGroupedByWord> missingWords;
 
     private List<String> textWithGaps;
 
-    public TextWithGaps(String textId, Set<WordGroup> missingWords, List<String> textWithGaps) {
+    public TextWithGaps(String textId, Set<WordIdsGroupedByWord> missingWords, List<String> textWithGaps) {
         this.missingWords = missingWords;
         this.textWithGaps = textWithGaps;
         this.textId = textId;
@@ -23,7 +21,7 @@ public class TextWithGaps {
         return textId;
     }
 
-    public Set<WordGroup> getMissingWords() {
+    public Set<WordIdsGroupedByWord> getMissingWords() {
         return missingWords;
     }
 

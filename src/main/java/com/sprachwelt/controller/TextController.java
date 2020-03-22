@@ -32,6 +32,7 @@ public class TextController {
     @PostMapping("check")
     @ResponseBody
     public Boolean checkWord(@RequestBody WordView wordView) {
-        return textService.checkWord(wordView.getTextId(), wordView.getWord());
+        System.out.println(wordView.getWordIdsGroupedByWord().getWordIds());
+        return textService.checkWord(wordView.getTextId(), wordView.getWordIdsGroupedByWord(), wordView.getPosition());
     }
 }

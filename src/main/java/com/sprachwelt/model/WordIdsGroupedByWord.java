@@ -2,7 +2,7 @@ package com.sprachwelt.model;
 
 import java.util.List;
 
-public class WordGroup {
+public class WordIdsGroupedByWord {
 
     String id;
     List<String> wordIds;

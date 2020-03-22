@@ -2,11 +2,12 @@ package com.sprachwelt.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Document
 public class Text {
     @Id
     private String id;
