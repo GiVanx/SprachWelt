@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="column">
+    <div
+      *ngFor="let word of textData.textWithGaps; index as i"
+      [class.word-box]="word"
+      [className]="getTextStyleClass(i, word)"
+      (click)="onMissingWordSpaceClick(i, word)"
+    >
+      {{ word ? word : WORD_PLACEHOLDER }}
+    </div>
+  </div>
+
+  <div class="column">
+    <div
+      *ngFor="let word of textData.missingWords; index as i"
+      (click)="onMissingWordClick(i, word)"
+      [className]="
+        selectedMissingWord === i
+          ? missingWordStyles.selected
+          : missingWordStyles.default
+      "
+    >
+      {{ word.id }}
+    </div>
+  </div>
+</div>
+
+<div>Wrong!</div>

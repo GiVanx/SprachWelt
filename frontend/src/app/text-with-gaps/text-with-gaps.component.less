@@ -1,0 +1,29 @@
+.row {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.column {
+  flex: 0.48;
+  border: solid 1px #ccc;
+}
+
+.word-box {
+  display: inline-block;
+  padding: 5px;
+  height: 30px;
+  margin: 1px;
+  color: rgba(0, 0, 0, 0.87);
+  background: white;
+  font-size: 14px;
+}
+
+.missing-word-space:extend(.word-box) {
+  border-bottom: solid 1px red;
+  color: red;
+}
+
+.selected {
+  border: solid blue;
+  border-radius: 5px;
+}
