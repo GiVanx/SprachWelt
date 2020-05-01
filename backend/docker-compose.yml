@@ -8,6 +8,6 @@ services:
             - MONGO_INITDB_ROOT_PASSWORD=root
             - ABCDEF=${PWD}
         volumes:
-            - /sprach-welt/init-mongodb.js:/docker-entrypoint-initdb.d/init-mongo.js
+            - ./init-mongodb.js:/docker-entrypoint-initdb.d/init-mongo.js
         ports:
             - '27017-27019:27017-27019'

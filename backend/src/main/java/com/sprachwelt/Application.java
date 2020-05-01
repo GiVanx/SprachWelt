@@ -36,6 +36,11 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
         textRepository.deleteAll();
+
+        textService.add("You never know how things will turn out to be");
+
+        System.out.println(textRepository.findAll());
     }
 }

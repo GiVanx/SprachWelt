@@ -2,8 +2,9 @@ package com.sprachwelt.service;
 
 import com.sprachwelt.model.Text;
 import com.sprachwelt.model.Word;
-import com.sprachwelt.model.WordIdsGroupedByWord;
+import com.sprachwelt.model.WordStatus;
 import com.sprachwelt.repository.TextRepository;
+import com.sprachwelt.view.WordStatusView;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
@@ -43,16 +45,34 @@ public class TextService {
      * ])
      *
      * @param textId
-     * @param wordIdsGroupedByWord
-     * @return
+     * @param words
+     * @returns
      */
-    public boolean checkWord(String textId, WordIdsGroupedByWord wordIdsGroupedByWord, int wordPosition) {
+    public List<WordStatusView> checkWords(String textId, List<Word> words) {
 
-        Text text = getTextByIdWithSubsetOfWordsFoundById(textId, wordIdsGroupedByWord);
-        return text.getWords().stream().anyMatch(word -> word.getPosition() == wordPosition);
+        Map<String, Word> idToWordMap = getTextWithWords(textId, words)
+                .getWords().stream().collect(Collectors.toMap(word -> word.getId(), word -> word));
+
+        List<WordStatusView> statusList = new ArrayList<>();
+
+        for (Word word : words) {
+            Word wordFromText = idToWordMap.get(word.getId());
+            WordStatus status;
+
+            if (wordFromText == null) {
+                status = WordStatus.NOT_FOUND;
+            } else if (wordFromText.getPosition() != word.getPosition()) {
+                status = WordStatus.WRONG_POSITION;
+            } else {
+                status =WordStatus.OK;
+            }
+
+            statusList.add(new WordStatusView(word.getId(), status));
+        }
+        return statusList;
     }
 
-    private Text getTextByIdWithSubsetOfWordsFoundById(String textId, WordIdsGroupedByWord wordIdsGroupedByWord) {
+    private Text getTextWithWords(String textId, List<Word> wordsToFind) {
         MatchOperation matchOperation = match(Criteria.where("_id").is(new ObjectId(textId)));
         ProjectionOperation projectionOperation =
                 project().and((AggregationOperationContext context) -> {
@@ -60,7 +80,8 @@ public class TextService {
                     filterExpression.put("input", "$words");
                     filterExpression.put("as", "word");
                     filterExpression.put("cond", new Document("$in",
-                            Arrays.<Object>asList("$$word._id", wordIdsGroupedByWord.getWordIds().stream().map(id -> new ObjectId(id)).collect(Collectors.toList()))));
+                            Arrays.<Object>asList("$$word._id", wordsToFind.stream().map(word -> word.getId())
+                                    .map(id -> new ObjectId(id)).collect(Collectors.toList()))));
                     return new Document("$filter", filterExpression);
                 }).as("words");
 

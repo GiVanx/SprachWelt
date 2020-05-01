@@ -8,15 +8,15 @@ public class Word {
 
     @Id
     private String id;
-    private String word;
+    private String text;
     private Integer position;
 
     public Word() {
     }
 
-    public Word(String id, String word, Integer position) {
+    public Word(String id, String text, Integer position) {
         this.id = id;
-        this.word = word;
+        this.text = text;
         this.position = position;
     }
 
@@ -24,8 +24,8 @@ public class Word {
         return id;
     }
 
-    public String getWord() {
-        return word;
+    public String getText() {
+        return text;
     }
 
     public Integer getPosition() {
@@ -36,7 +36,7 @@ public class Word {
     public String toString() {
         return "Word{" +
                 "id=" + id + ", " +
-                "text='" + word + '\'' +
+                "text='" + text + '\'' +
                 ", position=" + position +
                 '}';
     }

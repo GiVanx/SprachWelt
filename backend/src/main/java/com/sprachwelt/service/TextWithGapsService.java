@@ -6,6 +6,7 @@ import com.sprachwelt.model.TextWithGaps;
 import com.sprachwelt.model.Word;
 import com.sprachwelt.model.WordIdsGroupedByWord;
 import com.sprachwelt.repository.TextRepository;
+import com.sprachwelt.view.WordView;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -38,23 +39,23 @@ public class TextWithGapsService {
         String textId = text.getId();
         text = textRepository.findById(text.getId()).orElseThrow(() -> new TextNotFound(textId));
 
-        Map<String, WordIdsGroupedByWord> wordGroups = getWordGroups(text);
-
         List<String> textWithGaps = new ArrayList<>();
-        Set<WordIdsGroupedByWord> missingWords = new HashSet<>();
+        Set<WordView> missingWords = new HashSet<>();
         Random random = new Random();
 
+        int i = 0;
         for (Word word : text.getWords()) {
 
             // check if this is a word
-            if (word.getWord().matches("^[a-zA-Z0-9\\-äöüÄÖÜß]*$")
+            if (word.getText().matches("^[a-zA-Z0-9\\-äöüÄÖÜß]*$")
                     && random.nextInt(100) > wordPresenceProbabilityPercent) {
 
-                missingWords.add(wordGroups.get(word.getWord()));
+                missingWords.add(new WordView(word.getId(), word.getText()));
                 textWithGaps.add(null);
             } else {
-                textWithGaps.add(word.getWord());
+                textWithGaps.add(word.getText());
             }
+            ++i;
         }
         return new TextWithGaps(text.getId(), missingWords, textWithGaps);
     }

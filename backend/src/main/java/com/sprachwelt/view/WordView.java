@@ -1,33 +1,27 @@
 package com.sprachwelt.view;
 
-import com.sprachwelt.model.WordIdsGroupedByWord;
-
 public class WordView {
-    private String textId;
-    private int position;
-    private WordIdsGroupedByWord wordIdsGroupedByWord;
+    private String id;
+    private String text;
 
-    public String getTextId() {
-        return textId;
+    public WordView(String id, String text) {
+        this.id = id;
+        this.text = text;
     }
 
-    public void setTextId(String textId) {
-        this.textId = textId;
+    public String getId() {
+        return id;
     }
 
-    public int getPosition() {
-        return position;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public String getText() {
+        return text;
     }
 
-    public WordIdsGroupedByWord getWordIdsGroupedByWord() {
-        return wordIdsGroupedByWord;
-    }
-
-    public void setWordIdsGroupedByWord(WordIdsGroupedByWord wordIdsGroupedByWord) {
-        this.wordIdsGroupedByWord = wordIdsGroupedByWord;
+    public void setText(String text) {
+        this.text = text;
     }
 }
