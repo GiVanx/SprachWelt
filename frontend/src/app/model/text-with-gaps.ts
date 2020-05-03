@@ -1,7 +1,7 @@
-import { MissingWord } from './missing-word';
+import { Word } from './word';
 
 export class TextWithGaps {
   textId: string;
-  missingWords: MissingWord[];
-  textWithGaps: string[];
+  missingWords: Word[];
+  textWithGaps: Word[];
 }

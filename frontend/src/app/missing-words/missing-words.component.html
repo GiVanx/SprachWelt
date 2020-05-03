@@ -1,5 +1,5 @@
 <app-word-display
   #wordsDisplay
   (onWordSelectionChange)="onWordSelectionChange($event)"
-  [words]="textWithGaps$ | async"
+  [words]="missingWords$ | async"
 ></app-word-display>

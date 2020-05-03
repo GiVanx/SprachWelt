@@ -1,69 +1,41 @@
-import { Component, OnInit } from '@angular/core';
-import { TextWithGaps } from '../model/text-with-gaps';
-import { textWithGapsMock } from '../mock-data/text-with-gaps.data';
-import { TextService } from '../text.service';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Observable } from 'rxjs';
+import { TextStore } from '../state/text.store';
+import { Word } from '../model/word';
+import { WordStatus } from '../model/word-status';
+import { UiStore } from '../state/ui.store';
+import { WordDisplayComponent } from '../word-display/word-display.component';
 
 @Component({
   selector: 'app-text-with-gaps',
   templateUrl: './text-with-gaps.component.html',
-  styleUrls: ['./text-with-gaps.component.less']
+  styleUrls: ['./text-with-gaps.component.less'],
 })
 export class TextWithGapsComponent implements OnInit {
-  textData: TextWithGaps = textWithGapsMock;
-  WORD_PLACEHOLDER = 'xxxxxx';
-  missingWordStyles = {
-    default: 'word-box',
-    selected: 'word-box selected'
-  };
-  textStyles = {
-    existingWord: {
-      default: 'word-box'
-    },
-    missingWord: {
-      default: 'missing-word-space',
-      selected: 'missing-word-space selected'
-    }
-  };
+  textWithGaps$: Observable<Word[]>;
+  selectedGapIndex$: Observable<number>;
 
-  missingWordActiveStyle: string;
-  selectedMissingWord: number;
-  selectedMissingWordSpace: number;
+  @ViewChild('wordsDisplay') wordsDisplayComponent: WordDisplayComponent;
 
-  constructor(private textService: TextService) {
-    this.missingWordActiveStyle = this.missingWordStyles.default;
+  constructor(private textStore: TextStore, private uiStore: UiStore) {}
+
+  ngOnInit(): void {
+    this.textWithGaps$ = this.textStore.selectTextWithGaps();
+    this.uiStore.getSelectedTextGapIndex().subscribe((selected) => {
+      if (selected === null && this.wordsDisplayComponent) {
+        this.wordsDisplayComponent.clearSelection();
+      }
+    });
   }
 
-  onMissingWordSpaceClick(i, word) {
-    if (!word) {
-      this.textService.selectMissingWordPosition(i);
-      this.selectedMissingWordSpace = i;
-    }
+  onWordSelectionChange(wordPosition) {
+    this.uiStore.setSelectedTextGapIndex(wordPosition);
   }
 
-  onMissingWordClick(i, word) {
-    this.textService.selectMissingWord(word);
-    this.missingWordActiveStyle = this.missingWordStyles.selected;
-    this.selectedMissingWord = i;
-  }
-
-  getTextStyleClass(i, word) {
-    if (word) {
-      return this.textStyles.existingWord.default;
-    } else {
-      return i === this.selectedMissingWordSpace
-        ? this.textStyles.missingWord.selected
-        : this.textStyles.missingWord.default;
-    }
-  }
-
-  onCheckClick() {
-    if (
-      this.textService.getMissingWord() &&
-      this.textService.getMissingWordPosition()
-    ) {
-      // this.textService.checkText();
-    }
-  }
-
-  ngOnInit(): void {}
+  // onTextGapClick(event) {
+  //   console.log('EVENT', event.option.value);
+  //   // TODO: add functionality when the a word was already selected
+  //   // in a text gap, but the user would like to replace it with another
+  //   // missing word.
+  // }
 }

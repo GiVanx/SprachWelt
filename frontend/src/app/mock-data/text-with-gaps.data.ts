@@ -4,112 +4,125 @@ export const textWithGapsMock: TextWithGaps = {
   textId: '5e804836986b3a5f22588608',
   missingWords: [
     {
-      id: 'waren',
-      wordIds: ['5e804836986b3a5f225885f3'],
-      color: 'white',
-      position: null,
-      draggable: true
+      id: '5e804836986b3a5f225885f3',
+      text: 'waren',
     },
     {
-      id: 'das',
-      wordIds: ['5e804836986b3a5f225885fe'],
-      color: 'white',
-      position: null,
-      draggable: true
+      id: '5e804836986b3a5f225885fe',
+      text: 'das',
     },
     {
-      id: 'Jahre',
-      wordIds: [
-        '5e804836986b3a5f225885f6',
-        '5e804836986b3a5f225885f7',
-        '5e804836986b3a5f225885f8'
-      ],
-      color: 'white',
-      position: null,
-      draggable: true
+      text: 'Jahre',
+      id: '5e804836986b3a5f225885f6',
     },
     {
-      id: 'symptomatischen',
-      wordIds: ['5e804836986b3a5f225885f1'],
-      color: 'white',
-      position: null,
-      draggable: true
+      text: 'Jahre',
+      id: '5e804836986b3a5f225885f7',
     },
     {
-      id: 'ob',
-      wordIds: ['5e804836986b3a5f22588603'],
-      color: 'white',
-      position: null,
-      draggable: true
+      text: 'Jahre',
+      id: '5e804836986b3a5f225885f8',
     },
     {
-      id: 'Anfang',
-      wordIds: ['5e804836986b3a5f225885f4'],
-      color: 'white',
-      position: null,
-      draggable: true
+      text: 'symptomatischen',
+      id: '5e804836986b3a5f225885f1',
     },
     {
-      id: 'auf',
-      wordIds: ['5e804836986b3a5f22588604'],
-      color: 'white',
-      position: null,
-      draggable: true
+      text: 'ob',
+      id: '5e804836986b3a5f22588603',
     },
     {
-      id: 'Intensivstation',
-      wordIds: ['5e804836986b3a5f22588607'],
-      color: 'white',
-      position: null,
-      draggable: true
+      text: 'Anfang',
+      id: '5e804836986b3a5f225885f4',
     },
     {
-      id: '20',
-      wordIds: ['5e804836986b3a5f225885f5'],
-      color: 'white',
-      position: null,
-      draggable: true
+      text: 'auf',
+      id: '5e804836986b3a5f22588604',
     },
     {
-      id: 'Die',
-      wordIds: ['5e804836986b3a5f225885ef'],
-      color: 'white',
-      position: null,
-      draggable: true
+      text: 'Intensivstation',
+      id: '5e804836986b3a5f22588607',
     },
     {
-      id: 'Covid-19-Patienten',
-      wordIds: ['5e804836986b3a5f225885f2'],
-      color: 'white',
-      position: null,
-      draggable: true
-    }
+      text: '20',
+      id: '5e804836986b3a5f225885f5',
+    },
+    {
+      text: 'Die',
+      id: '5e804836986b3a5f225885ef',
+    },
+    {
+      text: 'Covid-19-Patienten',
+      id: '5e804836986b3a5f225885f2',
+    },
   ],
   textWithGaps: [
     null,
-    'jüngsten',
+    {
+      text: 'jüngsten',
+      id: '1',
+    },
     null,
     null,
     null,
     null,
     null,
     null,
-    'Jahre',
-    'Jahre',
-    'alt',
-    '.',
-    'Insgesamt',
-    'sehen',
-    'wir',
+    {
+      text: 'Jahre',
+      id: '1',
+    },
+    {
+      text: 'Jahre',
+      id: '1',
+    },
+    {
+      text: 'alt',
+      id: '1',
+    },
+    {
+      text: '.',
+      id: '1',
+    },
+    {
+      text: 'Insgesamt',
+      id: '1',
+    },
+    {
+      text: 'sehen',
+      id: '1',
+    },
+    {
+      text: 'wir',
+      id: '1',
+    },
     null,
-    'ganze',
-    'demografische',
-    'Altersspektrum',
-    'egal',
+    {
+      text: 'ganze',
+      id: '1',
+    },
+    {
+      text: 'demografische',
+      id: '1',
+    },
+    {
+      text: 'Altersspektrum',
+      id: '1',
+    },
+    {
+      text: 'egal',
+      id: '1',
+    },
     null,
     null,
-    'Normalstation',
-    'oder',
-    null
-  ]
+    {
+      text: 'Normalstation',
+      id: '1',
+    },
+    {
+      text: 'oder',
+      id: '1',
+    },
+    null,
+  ],
 };

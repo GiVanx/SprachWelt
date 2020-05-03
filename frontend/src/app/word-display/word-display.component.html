@@ -1,0 +1,27 @@
+<mat-selection-list
+  #textWithGaps
+  [multiple]="false"
+  [(ngModel)]="selectedOptions"
+  (ngModelChange)="onNgModelChange()"
+>
+  <mat-list-option
+    *ngFor="let word of words; index as i"
+    [value]="word"
+    [disabled]="
+      word.status !== getWordStatusEnum().MISSING &&
+      word.status !== getWordStatusEnum().IDLE &&
+      word.status !== getWordStatusEnum().TO_BE_EVALUATED
+    "
+    [class.list-item-active]="
+      selectedOptions.length > 0 &&
+      selectedOptions[0].position === word.position
+    "
+    [class.to-be-evaluated]="
+      word.status === getWordStatusEnum().TO_BE_EVALUATED
+    "
+  >
+    {{
+      word.status !== getWordStatusEnum().MISSING ? word.text : WORD_PLACEHOLDER
+    }}
+  </mat-list-option>
+</mat-selection-list>
