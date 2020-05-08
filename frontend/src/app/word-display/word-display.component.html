@@ -5,8 +5,10 @@
   (ngModelChange)="onNgModelChange()"
 >
   <mat-list-option
+    (click)="(null)"
     *ngFor="let word of words; index as i"
     [value]="word"
+    (dblclick)="onDoubleClick(word)"
     [disabled]="
       word.status !== getWordStatusEnum().MISSING &&
       word.status !== getWordStatusEnum().IDLE &&

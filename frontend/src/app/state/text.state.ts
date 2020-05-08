@@ -4,12 +4,12 @@ export interface TextState {
   activeTextId: string;
   missingWords: Word[];
   textWithGaps: Word[];
-  wordsToBeEvaluated: Word[];
+  wordsToBeEvaluated: Map<number, Word>;
 }
 
 export const initialWordState: TextState = {
   activeTextId: null,
   missingWords: [],
   textWithGaps: [],
-  wordsToBeEvaluated: [],
+  wordsToBeEvaluated: new Map(),
 };

@@ -6,7 +6,8 @@ export class Word {
   position?: number;
   status?: WordStatus;
 
-  constructor(text: string, position: number, status: WordStatus) {
+  constructor(id: string, text: string, position: number, status: WordStatus) {
+    this.id = id;
     this.text = text;
     this.position = position;
     this.status = status;

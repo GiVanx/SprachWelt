@@ -12,6 +12,7 @@ export class WordDisplayComponent implements OnInit {
   @Input() words: Word[];
   selectedOptions: Word[] = [];
   @Output() onWordSelectionChange: EventEmitter<number> = new EventEmitter();
+  @Output() onWordDoubleClick: EventEmitter<Word> = new EventEmitter();
 
   textStyle = {
     default: '',
@@ -27,6 +28,11 @@ export class WordDisplayComponent implements OnInit {
 
   getWordStatusEnum() {
     return WordStatus;
+  }
+
+  onDoubleClick(word: Word) {
+    console.log('double click', word);
+    this.onWordDoubleClick.emit(word);
   }
 
   onNgModelChange() {

@@ -29,7 +29,15 @@ export class TextWithGapsComponent implements OnInit {
   }
 
   onWordSelectionChange(wordPosition) {
+    console.log('on word selection');
     this.uiStore.setSelectedTextGapIndex(wordPosition);
+  }
+
+  onWordDoubleClick(word) {
+    console.log('on double click');
+    this.textStore.moveWordFromTextGapToMissingWords(word);
+    this.uiStore.setSelectedTextGapIndex(null);
+    this.uiStore.setSelectedMissingWordIndex(null);
   }
 
   // onTextGapClick(event) {
