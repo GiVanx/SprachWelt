@@ -8,10 +8,13 @@ import { WordStatus } from '../model/word-status';
   styleUrls: ['./word-display.component.less'],
 })
 export class WordDisplayComponent implements OnInit {
+  timer;
+  preventSingleClick: boolean;
+
   WORD_PLACEHOLDER = '?????';
   @Input() words: Word[];
   selectedOptions: Word[] = [];
-  @Output() onWordSelectionChange: EventEmitter<number> = new EventEmitter();
+  @Output() onWordSingleClick: EventEmitter<number> = new EventEmitter();
   @Output() onWordDoubleClick: EventEmitter<Word> = new EventEmitter();
 
   textStyle = {
@@ -30,16 +33,31 @@ export class WordDisplayComponent implements OnInit {
     return WordStatus;
   }
 
+  onSingleClick(word) {
+    this.preventSingleClick = false;
+    const delay = 100;
+
+    this.timer = setTimeout(() => {
+      if (!this.preventSingleClick) {
+        console.log('single click');
+        this.onWordSingleClick.emit(word);
+      }
+    }, delay);
+  }
+
   onDoubleClick(word: Word) {
     console.log('double click', word);
+    this.preventSingleClick = true;
+    clearTimeout(this.timer);
     this.onWordDoubleClick.emit(word);
   }
 
-  onNgModelChange() {
-    if (this.selectedOptions.length > 0) {
-      this.onWordSelectionChange.emit(this.selectedOptions[0].position);
-    }
-  }
+  // onNgModelChange() {
+  //   if (this.selectedOptions.length > 0) {
+  //     console.log('selected', this.selectedOptions[0].position);
+  //     this.onWordSingleClick.emit(this.selectedOptions[0].position);
+  //   }
+  // }
 
   clearSelection() {
     this.selectedOptions = [];

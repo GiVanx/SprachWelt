@@ -19,7 +19,8 @@ export class MissingWordsComponent implements OnInit {
     this.missingWords$ = this.textStore.selectMissingWords();
   }
 
-  onWordSelectionChange(wordPosition) {
-    this.uiStore.setSelectedMissingWordIndex(wordPosition);
+  onWordSelectionChange(word: Word) {
+    console.log('onWordSelectionChange');
+    this.uiStore.setSelectedMissingWordIndex(word.position);
   }
 }

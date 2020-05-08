@@ -28,9 +28,9 @@ export class TextWithGapsComponent implements OnInit {
     });
   }
 
-  onWordSelectionChange(wordPosition) {
+  onWordSelectionChange(word: Word) {
     console.log('on word selection');
-    this.uiStore.setSelectedTextGapIndex(wordPosition);
+    this.uiStore.setSelectedTextGapIndex(word.position);
   }
 
   onWordDoubleClick(word) {

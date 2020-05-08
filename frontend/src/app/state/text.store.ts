@@ -30,8 +30,17 @@ export class TextStore {
       .pipe(map((state) => state.textWithGaps));
   }
 
-  moveWordFromMissingToTextGap(textGapIndex: number, missingWordIndex: number) {
+  _moveWordFromMissingToTextGap(
+    textGapIndex: number,
+    missingWordIndex: number
+  ) {
+    console.log(
+      '_moveWordFromMissingToTextGap',
+      textGapIndex,
+      missingWordIndex
+    );
     let state = this._wordState.getValue();
+    console.log('BEFORE state', state);
 
     let textWithGaps = [...state.textWithGaps];
     textWithGaps[textGapIndex] = state.missingWords[missingWordIndex];
@@ -40,6 +49,7 @@ export class TextStore {
 
     let missingWords = [...state.missingWords];
     missingWords.splice(missingWordIndex, 1);
+    missingWords.forEach((word, index) => (word.position = index));
 
     let wordsToBeEvaluated = new Map(state.wordsToBeEvaluated);
     wordsToBeEvaluated.set(textGapIndex, textWithGaps[textGapIndex]);
@@ -50,17 +60,35 @@ export class TextStore {
       missingWords,
       wordsToBeEvaluated,
     };
+    console.log('AFTER state', state);
+
     this._wordState.next(state);
   }
 
-  moveWordFromTextGapToMissingWords(word: Word) {
+  moveWordFromMissingToTextGap(textGapIndex: number, missingWordIndex: number) {
     let state = this._wordState.getValue();
+
+    console.log('INITIAL ', state);
+
+    if (
+      state.textWithGaps[textGapIndex].status === WordStatus.TO_BE_EVALUATED
+    ) {
+      this.moveWordFromTextGapToMissingWords(state.textWithGaps[textGapIndex]);
+    }
+    this._moveWordFromMissingToTextGap(textGapIndex, missingWordIndex);
+  }
+
+  moveWordFromTextGapToMissingWords(word: Word) {
+    console.log('----- moveWordFromTextGapToMissingWords', word);
+    let state = this._wordState.getValue();
+    console.log('BEFORE state', state);
 
     let missingWords = [...state.missingWords];
     const missingWord = this.wordUtils.deepCopy(word);
     missingWord.status = WordStatus.IDLE;
     missingWords.push(missingWord);
     missingWords.forEach((word, index) => (word.position = index));
+    console.log('missing', missingWords);
 
     let textWithGaps = [...state.textWithGaps];
     const textWord = this.wordUtils.deepCopy(word);
@@ -77,6 +105,7 @@ export class TextStore {
       missingWords,
       wordsToBeEvaluated,
     };
+    console.log('AFTER state', state);
     this._wordState.next(state);
   }
 

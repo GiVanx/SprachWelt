@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UiStore } from '../state/ui.store';
 import { combineLatest } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, distinctUntilChanged } from 'rxjs/operators';
 import { TextStore } from '../state/text.store';
 
 @Component({
@@ -27,13 +27,15 @@ export class TextFillGameComponent implements OnInit {
         )
       )
       .subscribe(([missingWordIndex, textGapIndex]) => {
-        this.textStore.moveWordFromMissingToTextGap(
-          textGapIndex,
-          missingWordIndex
-        );
+        console.log('mi', missingWordIndex, 'ti', textGapIndex);
+        if (missingWordIndex !== null && textGapIndex !== null) {
+          this.textStore.moveWordFromMissingToTextGap(
+            textGapIndex,
+            missingWordIndex
+          );
 
-        this.uiStore.setSelectedMissingWordIndex(null);
-        this.uiStore.setSelectedTextGapIndex(null);
+          this.uiStore.clearSelection();
+        }
       });
   }
 

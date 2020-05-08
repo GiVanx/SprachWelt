@@ -2,10 +2,9 @@
   #textWithGaps
   [multiple]="false"
   [(ngModel)]="selectedOptions"
-  (ngModelChange)="onNgModelChange()"
 >
   <mat-list-option
-    (click)="(null)"
+    (click)="onSingleClick(word)"
     *ngFor="let word of words; index as i"
     [value]="word"
     (dblclick)="onDoubleClick(word)"
