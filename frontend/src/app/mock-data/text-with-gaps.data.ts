@@ -70,58 +70,58 @@ export const textWithGapsMock: TextWithGaps = {
     null,
     {
       text: 'Jahre',
-      id: '1',
+      id: '2',
     },
     {
       text: 'Jahre',
-      id: '1',
+      id: '3',
     },
     {
       text: 'alt',
-      id: '1',
+      id: '4',
     },
     {
       text: '.',
-      id: '1',
+      id: '5',
     },
     {
       text: 'Insgesamt',
-      id: '1',
+      id: '6',
     },
     {
       text: 'sehen',
-      id: '1',
+      id: '7',
     },
     {
       text: 'wir',
-      id: '1',
+      id: '8',
     },
     null,
     {
       text: 'ganze',
-      id: '1',
+      id: '9',
     },
     {
       text: 'demografische',
-      id: '1',
+      id: '10',
     },
     {
       text: 'Altersspektrum',
-      id: '1',
+      id: '11',
     },
     {
       text: 'egal',
-      id: '1',
+      id: '12',
     },
     null,
     null,
     {
       text: 'Normalstation',
-      id: '1',
+      id: '13',
     },
     {
       text: 'oder',
-      id: '1',
+      id: '14',
     },
     null,
   ],

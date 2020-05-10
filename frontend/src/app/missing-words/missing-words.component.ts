@@ -16,11 +16,10 @@ export class MissingWordsComponent implements OnInit {
   constructor(private textStore: TextStore, private uiStore: UiStore) {}
 
   ngOnInit(): void {
-    this.missingWords$ = this.textStore.selectMissingWords();
+    this.missingWords$ = this.textStore.selectAllMissingWords();
   }
 
   onWordSelectionChange(word: Word) {
-    console.log('onWordSelectionChange');
-    this.uiStore.setSelectedMissingWordIndex(word.position);
+    this.uiStore.setSelectedMissingWordId(word.id);
   }
 }

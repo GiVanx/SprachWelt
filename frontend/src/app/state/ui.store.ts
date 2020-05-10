@@ -11,40 +11,45 @@ export class UiStore {
     initialUiState
   );
 
-  getSelectedMissingWordIndex() {
+  getSelection() {
     return this._uiState
       .asObservable()
-      .pipe(map((uiState) => uiState.selectedMissingWordIndex));
+      .pipe(
+        map((state) => [state.selectedTextGapId, state.selectedMissingWordId])
+      );
   }
 
-  getSelectedTextGapIndex() {
+  getSelectedMissingWordId() {
     return this._uiState
       .asObservable()
-      .pipe(map((uiState) => uiState.selectedTextGapIndex));
+      .pipe(map((uiState) => uiState.selectedMissingWordId));
+  }
+
+  getSelectedTextGapId() {
+    return this._uiState
+      .asObservable()
+      .pipe(map((uiState) => uiState.selectedTextGapId));
   }
 
   clearSelection() {
     let state = this._uiState.getValue();
     state = {
       ...state,
-      selectedMissingWordIndex: null,
-      selectedTextGapIndex: null,
+      selectedMissingWordId: null,
+      selectedTextGapId: null,
     };
-    console.log('new mi state', state);
     this._uiState.next(state);
   }
 
-  setSelectedMissingWordIndex(index: number) {
+  setSelectedMissingWordId(id: string) {
     let state = this._uiState.getValue();
-    state = { ...state, selectedMissingWordIndex: index };
-    console.log('new mi state', state);
+    state = { ...state, selectedMissingWordId: id };
     this._uiState.next(state);
   }
 
-  setSelectedTextGapIndex(index: number) {
+  setSelectedTextGapId(id: string) {
     let state = this._uiState.getValue();
-    state = { ...state, selectedTextGapIndex: index };
+    state = { ...state, selectedTextGapId: id };
     this._uiState.next(state);
-    console.log('new ti state', this._uiState.getValue());
   }
 }

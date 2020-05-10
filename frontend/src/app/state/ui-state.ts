@@ -1,11 +1,11 @@
 import { Word } from '../model/word';
 
 export interface UiState {
-  selectedMissingWordIndex: number;
-  selectedTextGapIndex: number;
+  selectedMissingWordId: string;
+  selectedTextGapId: string;
 }
 
 export const initialUiState: UiState = {
-  selectedMissingWordIndex: null,
-  selectedTextGapIndex: null,
+  selectedMissingWordId: null,
+  selectedTextGapId: null,
 };

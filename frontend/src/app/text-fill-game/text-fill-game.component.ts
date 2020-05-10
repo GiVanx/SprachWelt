@@ -16,26 +16,17 @@ export class TextFillGameComponent implements OnInit {
     //TODO: remove this line. It is now used only for testing.
     this.textStore.addTextRequest('');
 
-    combineLatest([
-      this.uiStore.getSelectedMissingWordIndex(),
-      this.uiStore.getSelectedTextGapIndex(),
-    ])
+    this.uiStore
+      .getSelection()
       .pipe(
         filter(
-          ([missingWordIndex, textGapIndex]) =>
-            missingWordIndex !== null && textGapIndex !== null
+          ([textGapId, missingWordId]) =>
+            missingWordId !== null && textGapId !== null
         )
       )
-      .subscribe(([missingWordIndex, textGapIndex]) => {
-        console.log('mi', missingWordIndex, 'ti', textGapIndex);
-        if (missingWordIndex !== null && textGapIndex !== null) {
-          this.textStore.moveWordFromMissingToTextGap(
-            textGapIndex,
-            missingWordIndex
-          );
-
-          this.uiStore.clearSelection();
-        }
+      .subscribe(([textGapId, missingWordId]) => {
+        this.textStore.moveWordFromMissingToTextGap(textGapId, missingWordId);
+        this.uiStore.clearSelection();
       });
   }
 

@@ -5,8 +5,8 @@ import { map } from 'rxjs/operators';
 import { TextService } from '../service/text.service';
 import { WordStatus } from '../model/word-status';
 import { Word } from '../model/word';
-import { textWithGapsMock } from '../mock-data/text-with-gaps.data';
 import { WordUtils } from '../model/word-utils';
+import * as uuid from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -18,94 +18,60 @@ export class TextStore {
 
   constructor(private wordService: TextService, private wordUtils: WordUtils) {}
 
-  selectMissingWords() {
+  selectAllMissingWords() {
     return this._wordState
       .asObservable()
-      .pipe(map((state) => state.missingWords));
+      .pipe(map((state) => state.missingWords.selectAll()));
   }
 
-  selectTextWithGaps() {
+  selectAllTextWithGaps() {
     return this._wordState
       .asObservable()
-      .pipe(map((state) => state.textWithGaps));
+      .pipe(map((state) => state.textWithGaps.selectAll()));
   }
 
-  _moveWordFromMissingToTextGap(
-    textGapIndex: number,
-    missingWordIndex: number
-  ) {
-    console.log(
-      '_moveWordFromMissingToTextGap',
-      textGapIndex,
-      missingWordIndex
-    );
-    let state = this._wordState.getValue();
-    console.log('BEFORE state', state);
-
-    let textWithGaps = [...state.textWithGaps];
-    textWithGaps[textGapIndex] = state.missingWords[missingWordIndex];
-    textWithGaps[textGapIndex].status = WordStatus.TO_BE_EVALUATED;
-    textWithGaps.forEach((word, index) => (word.position = index));
-
-    let missingWords = [...state.missingWords];
-    missingWords.splice(missingWordIndex, 1);
-    missingWords.forEach((word, index) => (word.position = index));
-
-    let wordsToBeEvaluated = new Map(state.wordsToBeEvaluated);
-    wordsToBeEvaluated.set(textGapIndex, textWithGaps[textGapIndex]);
-
-    state = {
-      ...state,
-      textWithGaps,
-      missingWords,
-      wordsToBeEvaluated,
-    };
-    console.log('AFTER state', state);
-
-    this._wordState.next(state);
-  }
-
-  moveWordFromMissingToTextGap(textGapIndex: number, missingWordIndex: number) {
+  moveWordFromMissingToTextGap(textGapId: string, missingWordId: string) {
     let state = this._wordState.getValue();
 
-    console.log('INITIAL ', state);
+    let textGap = state.textWithGaps.selectById(textGapId);
+    const missingWord = state.missingWords.selectById(missingWordId);
 
-    if (
-      state.textWithGaps[textGapIndex].status === WordStatus.TO_BE_EVALUATED
-    ) {
-      this.moveWordFromTextGapToMissingWords(state.textWithGaps[textGapIndex]);
+    // if the user previously selected a word for this text gap
+    if (textGap.status === WordStatus.TO_BE_EVALUATED) {
+      textGap = this.moveWordFromTextGapToMissingWords(textGap);
     }
-    this._moveWordFromMissingToTextGap(textGapIndex, missingWordIndex);
+    this._moveWordFromMissingToTextGap(textGap, missingWord);
   }
 
   moveWordFromTextGapToMissingWords(word: Word) {
-    console.log('----- moveWordFromTextGapToMissingWords', word);
     let state = this._wordState.getValue();
-    console.log('BEFORE state', state);
 
-    let missingWords = [...state.missingWords];
-    const missingWord = this.wordUtils.deepCopy(word);
-    missingWord.status = WordStatus.IDLE;
-    missingWords.push(missingWord);
-    missingWords.forEach((word, index) => (word.position = index));
-    console.log('missing', missingWords);
-
-    let textWithGaps = [...state.textWithGaps];
-    const textWord = this.wordUtils.deepCopy(word);
-    textWord.text = null;
-    textWord.status = WordStatus.MISSING;
-    textWithGaps[word.position] = textWord;
-
-    let wordsToBeEvaluated = new Map(state.wordsToBeEvaluated);
-    wordsToBeEvaluated.delete(word.position);
-
-    state = {
-      ...state,
-      textWithGaps,
-      missingWords,
-      wordsToBeEvaluated,
+    const newTextGap = {
+      ...word,
+      id: uuid.v4(),
+      status: WordStatus.MISSING,
     };
-    console.log('AFTER state', state);
+    state.textWithGaps.replace(word.id, newTextGap);
+
+    state.missingWords.add({
+      ...word,
+      status: WordStatus.IDLE,
+    });
+
+    this._wordState.next(state);
+    return newTextGap;
+  }
+
+  _moveWordFromMissingToTextGap(textGap: Word, missingWord: Word) {
+    let state = this._wordState.getValue();
+
+    state.textWithGaps.replace(textGap.id, {
+      ...missingWord,
+      status: WordStatus.TO_BE_EVALUATED,
+    });
+
+    state.missingWords.delete(missingWord);
+
     this._wordState.next(state);
   }
 
@@ -113,24 +79,52 @@ export class TextStore {
     this.wordService.addText(text).subscribe((response) => {
       let state = this._wordState.getValue();
 
-      state = {
-        ...state,
-        textWithGaps: this.processWords(
-          response.textWithGaps,
-          WordStatus.ORIGINAL
-        ),
-        missingWords: this.processWords(response.missingWords, WordStatus.IDLE),
-      };
+      const textWithGaps = this.processWords(
+        response.textWithGaps,
+        WordStatus.ORIGINAL
+      );
+      state.textWithGaps.addAll(textWithGaps);
+
+      const missingWords = this.processWords(
+        response.missingWords,
+        WordStatus.IDLE
+      );
+
+      state.wordsToBeEvaluated.push(...missingWords.map((word) => word.id));
+      state.missingWords.addAll(missingWords);
 
       this._wordState.next(state);
     });
+  }
+
+  checkWords() {
+    const state = this._wordState.getValue();
+    const toBeEvaluated = state.wordsToBeEvaluated;
+
+    const textGapWordEntities = state.textWithGaps.selectEntities();
+
+    const wordsToCheck = toBeEvaluated.map((wordId) =>
+      textGapWordEntities.get(wordId)
+    );
+
+    this.wordService
+      .checkWords(state.activeTextId, wordsToCheck)
+      .subscribe((evaluatedWords: Word[]) => {
+        const state = this._wordState.getValue();
+
+        for (let word of evaluatedWords) {
+          state.textWithGaps.replace(word.id, word);
+        }
+
+        this._wordState.next(state);
+      });
   }
 
   processWords(words: Word[], status: WordStatus) {
     words = [...words];
     return words.map((word, position) => {
       if (!word) {
-        return new Word(null, null, position, WordStatus.MISSING);
+        return new Word(uuid.v4(), null, position, WordStatus.MISSING);
       }
       return { ...word, position, status };
     });

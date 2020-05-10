@@ -20,8 +20,9 @@ export class TextWithGapsComponent implements OnInit {
   constructor(private textStore: TextStore, private uiStore: UiStore) {}
 
   ngOnInit(): void {
-    this.textWithGaps$ = this.textStore.selectTextWithGaps();
-    this.uiStore.getSelectedTextGapIndex().subscribe((selected) => {
+    this.textWithGaps$ = this.textStore.selectAllTextWithGaps();
+
+    this.uiStore.getSelectedTextGapId().subscribe((selected) => {
       if (selected === null && this.wordsDisplayComponent) {
         this.wordsDisplayComponent.clearSelection();
       }
@@ -29,21 +30,11 @@ export class TextWithGapsComponent implements OnInit {
   }
 
   onWordSelectionChange(word: Word) {
-    console.log('on word selection');
-    this.uiStore.setSelectedTextGapIndex(word.position);
+    this.uiStore.setSelectedTextGapId(word.id);
   }
 
   onWordDoubleClick(word) {
-    console.log('on double click');
     this.textStore.moveWordFromTextGapToMissingWords(word);
-    this.uiStore.setSelectedTextGapIndex(null);
-    this.uiStore.setSelectedMissingWordIndex(null);
+    this.uiStore.clearSelection();
   }
-
-  // onTextGapClick(event) {
-  //   console.log('EVENT', event.option.value);
-  //   // TODO: add functionality when the a word was already selected
-  //   // in a text gap, but the user would like to replace it with another
-  //   // missing word.
-  // }
 }

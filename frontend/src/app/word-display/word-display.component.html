@@ -8,18 +8,14 @@
     *ngFor="let word of words; index as i"
     [value]="word"
     (dblclick)="onDoubleClick(word)"
-    [disabled]="
-      word.status !== getWordStatusEnum().MISSING &&
-      word.status !== getWordStatusEnum().IDLE &&
-      word.status !== getWordStatusEnum().TO_BE_EVALUATED
-    "
+    [disabled]="word.status === getWordStatusEnum().ORIGINAL"
     [class.list-item-active]="
-      selectedOptions.length > 0 &&
-      selectedOptions[0].position === word.position
+      selectedOptions.length > 0 && selectedOptions[0].id === word.id
     "
     [class.to-be-evaluated]="
       word.status === getWordStatusEnum().TO_BE_EVALUATED
     "
+    [class.wrong]="word.status === getWordStatusEnum().WRONG"
   >
     {{
       word.status !== getWordStatusEnum().MISSING ? word.text : WORD_PLACEHOLDER
