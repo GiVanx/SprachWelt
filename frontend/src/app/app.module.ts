@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,6 +10,8 @@ import { TextFillGameComponent } from './text-fill-game/text-fill-game.component
 import { MatListModule } from '@angular/material/list';
 import { FormsModule } from '@angular/forms';
 import { WordDisplayComponent } from './word-display/word-display.component';
+import { TextFillGameHeaderComponent } from './text-fill-game-header/text-fill-game-header.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { WordDisplayComponent } from './word-display/word-display.component';
     MissingWordsComponent,
     TextFillGameComponent,
     WordDisplayComponent,
+    TextFillGameHeaderComponent,
   ],
   imports: [
     FormsModule,
@@ -27,6 +29,7 @@ import { WordDisplayComponent } from './word-display/word-display.component';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    MatButtonModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

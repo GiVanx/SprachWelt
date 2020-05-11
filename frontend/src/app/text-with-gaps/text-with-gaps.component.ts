@@ -2,7 +2,6 @@ import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TextStore } from '../state/text.store';
 import { Word } from '../model/word';
-import { WordStatus } from '../model/word-status';
 import { UiStore } from '../state/ui.store';
 import { WordDisplayComponent } from '../word-display/word-display.component';
 
