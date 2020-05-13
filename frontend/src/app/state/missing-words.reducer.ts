@@ -43,14 +43,19 @@ export class WordStateReducer {
     if (this.state.words.has(oldWordId)) {
       const newState = { ...this.state };
 
-      const ids = [...this.state.ids];
-      const idx = this.state.ids.findIndex((id) => id === oldWordId);
-      ids.splice(idx, 1, newWord.id);
-      newState.ids = ids;
+      if (oldWordId !== newWord.id) {
+        const ids = [...this.state.ids];
+        const idx = this.state.ids.findIndex((id) => id === oldWordId);
+        ids.splice(idx, 1, newWord.id);
+        newState.ids = ids;
+      }
 
       newState.words = new Map(this.state.words);
       newState.words.set(newWord.id, newWord);
-      newState.words.delete(oldWordId);
+
+      if (oldWordId !== newWord.id) {
+        newState.words.delete(oldWordId);
+      }
 
       this.state = newState;
     }

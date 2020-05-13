@@ -116,6 +116,7 @@ export class TextStore {
           state.textWithGaps.replace(word.id, word);
         }
 
+        console.log('final', state);
         this._wordState.next(state);
       });
   }

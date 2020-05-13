@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { textWithGapsMock } from '../mock-data/text-with-gaps.data';
 import { Word } from '../model/word';
 import { checkedWordsMock } from '../mock-data/checked-words.data';
+import { debounceTime } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,6 @@ export class TextService {
   }
 
   checkWords(textId: string, words: Word[]): Observable<Word[]> {
-    return of(checkedWordsMock);
+    return of(checkedWordsMock).pipe(debounceTime(2000));
   }
 }

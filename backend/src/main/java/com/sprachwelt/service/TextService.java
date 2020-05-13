@@ -32,7 +32,7 @@ public class TextService {
 
     public Text add(String textString) {
 
-        List<Word> textWords = getWords(textString);
+        List<Word> textWords = getTextWords(textString);
         Text text = new Text(textWords);
 
         return textRepository.save(text);
@@ -50,13 +50,21 @@ public class TextService {
      */
     public List<WordStatusView> checkWords(String textId, List<Word> words) {
 
-        Map<String, Word> idToWordMap = getTextWithWords(textId, words)
-                .getWords().stream().collect(Collectors.toMap(word -> word.getId(), word -> word));
+        Map<String, List<Word>> wordMap = words
+                .stream().collect(Collectors.groupingBy(Word::getText,
+                        Collectors.mapping(word -> word, Collectors.toList())));
+
+        Text text = getTextWords(textId, Arrays.asList(wordMap.keySet().toArray(new String[wordMap.keySet().size()])));
 
         List<WordStatusView> statusList = new ArrayList<>();
 
-        for (Word word : words) {
-            Word wordFromText = idToWordMap.get(word.getId());
+        for (String textWord : wordMap.keySet()) {
+
+            List<Word> inputWords = wordMap.get(textWord);
+
+            
+
+            Word wordFromText = wordMap.get(word.getText());
             WordStatus status;
 
             if (wordFromText == null) {
@@ -64,7 +72,7 @@ public class TextService {
             } else if (wordFromText.getPosition() != word.getPosition()) {
                 status = WordStatus.WRONG_POSITION;
             } else {
-                status =WordStatus.OK;
+                status = WordStatus.OK;
             }
 
             statusList.add(new WordStatusView(word.getId(), status));
@@ -72,7 +80,7 @@ public class TextService {
         return statusList;
     }
 
-    private Text getTextWithWords(String textId, List<Word> wordsToFind) {
+    private Text getTextWords(String textId, String word) {
         MatchOperation matchOperation = match(Criteria.where("_id").is(new ObjectId(textId)));
         ProjectionOperation projectionOperation =
                 project().and((AggregationOperationContext context) -> {
@@ -80,8 +88,7 @@ public class TextService {
                     filterExpression.put("input", "$words");
                     filterExpression.put("as", "word");
                     filterExpression.put("cond", new Document("$in",
-                            Arrays.<Object>asList("$$word._id", wordsToFind.stream().map(word -> word.getId())
-                                    .map(id -> new ObjectId(id)).collect(Collectors.toList()))));
+                            Arrays.<Object>asList("$$word._id", word)));
                     return new Document("$filter", filterExpression);
                 }).as("words");
 
@@ -90,7 +97,7 @@ public class TextService {
         return result.getUniqueMappedResult();
     }
 
-    private List<Word> getWords(String text) {
+    private List<Word> getTextWords(String text) {
 
         List<Word> words = new ArrayList<>();
         String pattern = "[a-zA-Z0-9\\-äöüÄÖÜß]";
