@@ -28,6 +28,6 @@ public class Text {
 
     @Override
     public String toString() {
-        return "Text{id:"+ id + "[" + words.stream().map(word -> word.toString()).collect(Collectors.joining(",")) + "]}";
+        return "Text{id:"+ id + ", words: [" + words.stream().map(word -> word.toString()).collect(Collectors.joining(",")) + "]}";
     }
 }

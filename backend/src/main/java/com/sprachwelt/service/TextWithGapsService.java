@@ -39,7 +39,7 @@ public class TextWithGapsService {
         String textId = text.getId();
         text = textRepository.findById(text.getId()).orElseThrow(() -> new TextNotFound(textId));
 
-        List<String> textWithGaps = new ArrayList<>();
+        List<WordView> textWithGaps = new ArrayList<>();
         Set<WordView> missingWords = new HashSet<>();
         Random random = new Random();
 
@@ -48,12 +48,12 @@ public class TextWithGapsService {
 
             // check if this is a word
             if (word.getText().matches("^[a-zA-Z0-9\\-äöüÄÖÜß]*$")
-                    && random.nextInt(100) > wordPresenceProbabilityPercent) {
+                    && random.nextInt(100) < wordPresenceProbabilityPercent) {
 
                 missingWords.add(new WordView(word.getId(), word.getText()));
                 textWithGaps.add(null);
             } else {
-                textWithGaps.add(word.getText());
+                textWithGaps.add(new WordView(word.getId(), word.getText()));
             }
             ++i;
         }

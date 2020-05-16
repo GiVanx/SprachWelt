@@ -4,20 +4,32 @@ import com.sprachwelt.model.WordStatus;
 
 public class WordStatusView {
 
-    private String wordId;
+    private String id;
+    private String text;
     private WordStatus status;
+    private Integer position;
 
-    public WordStatusView(String wordId, WordStatus wordStatus) {
-        this.wordId = wordId;
+    public WordStatusView(String id, String text, WordStatus wordStatus, Integer position) {
+        this.id = id;
+        this.text = text;
         this.status = wordStatus;
+        this.position = position;
     }
 
-    public String getWordId() {
-        return wordId;
+    public String getId() {
+        return id;
     }
 
-    public void setWordId(String wordId) {
-        this.wordId = wordId;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public WordStatus getStatus() {
@@ -26,5 +38,13 @@ public class WordStatusView {
 
     public void setStatus(WordStatus status) {
         this.status = status;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 }

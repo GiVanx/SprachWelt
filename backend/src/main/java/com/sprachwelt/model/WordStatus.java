@@ -1,7 +1,11 @@
 package com.sprachwelt.model;
 
 public enum WordStatus {
+    ORIGINAL,
+    TO_BE_EVALUATED,
     OK,
-    NOT_FOUND,
-    WRONG_POSITION
+    WRONG,
+    MISSING,
+    IDLE,
+    NOT_FOUND
 }

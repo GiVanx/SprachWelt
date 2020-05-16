@@ -11,9 +11,9 @@ public class TextWithGaps {
 
     private Set<WordView> missingWords;
 
-    private List<String> textWithGaps;
+    private List<WordView> textWithGaps;
 
-    public TextWithGaps(String textId, Set<WordView> missingWords, List<String> textWithGaps) {
+    public TextWithGaps(String textId, Set<WordView> missingWords, List<WordView> textWithGaps) {
         this.missingWords = missingWords;
         this.textWithGaps = textWithGaps;
         this.textId = textId;
@@ -27,7 +27,7 @@ public class TextWithGaps {
         return missingWords;
     }
 
-    public List<String> getTextWithGaps() {
+    public List<WordView> getTextWithGaps() {
         return textWithGaps;
     }
 

@@ -50,37 +50,36 @@ public class TextService {
      */
     public List<WordStatusView> checkWords(String textId, List<Word> words) {
 
-        Map<String, List<Word>> wordMap = words
-                .stream().collect(Collectors.groupingBy(Word::getText,
-                        Collectors.mapping(word -> word, Collectors.toList())));
+        Text text = getTextWords(textId, words.stream().map(Word::getText).collect(Collectors.toList()));
 
-        Text text = getTextWords(textId, Arrays.asList(wordMap.keySet().toArray(new String[wordMap.keySet().size()])));
+        System.out.println("text" + text);
+
+        Map<String, Map<Integer, Word>> wordMap = text.getWords()
+                .stream().collect(Collectors.groupingBy(Word::getText,
+                        Collectors.mapping(word -> word, Collectors.toMap(Word::getPosition, word -> word))));
 
         List<WordStatusView> statusList = new ArrayList<>();
 
-        for (String textWord : wordMap.keySet()) {
+        System.out.println();
 
-            List<Word> inputWords = wordMap.get(textWord);
+        for (Word wordToCheck : words) {
 
-            
+            WordStatus status = WordStatus.NOT_FOUND;
+            if (wordMap.containsKey(wordToCheck.getText())) {
 
-            Word wordFromText = wordMap.get(word.getText());
-            WordStatus status;
-
-            if (wordFromText == null) {
-                status = WordStatus.NOT_FOUND;
-            } else if (wordFromText.getPosition() != word.getPosition()) {
-                status = WordStatus.WRONG_POSITION;
-            } else {
-                status = WordStatus.OK;
+                if (wordMap.get(wordToCheck.getText()).containsKey(wordToCheck.getPosition())) {
+                    status = WordStatus.OK;
+                } else {
+                    status = WordStatus.WRONG;
+                }
             }
+            statusList.add(new WordStatusView(wordToCheck.getId(), wordToCheck.getText(), status, wordToCheck.getPosition()));
 
-            statusList.add(new WordStatusView(word.getId(), status));
         }
         return statusList;
     }
 
-    private Text getTextWords(String textId, String word) {
+    private Text getTextWords(String textId, List<String> words) {
         MatchOperation matchOperation = match(Criteria.where("_id").is(new ObjectId(textId)));
         ProjectionOperation projectionOperation =
                 project().and((AggregationOperationContext context) -> {
@@ -88,7 +87,7 @@ public class TextService {
                     filterExpression.put("input", "$words");
                     filterExpression.put("as", "word");
                     filterExpression.put("cond", new Document("$in",
-                            Arrays.<Object>asList("$$word._id", word)));
+                            Arrays.<Object>asList("$$word.text", words)));
                     return new Document("$filter", filterExpression);
                 }).as("words");
 

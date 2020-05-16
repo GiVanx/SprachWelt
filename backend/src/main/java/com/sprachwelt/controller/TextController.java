@@ -26,9 +26,9 @@ public class TextController {
     public TextWithGaps addText(@RequestBody String textString) {
 
         Text text = textService.add(textString);
-        System.out.println(text);
+        System.out.println("TEXXXXXT: " + text);
 
-        TextWithGaps textWithGaps = textWithGapsService.create(text, 60);
+        TextWithGaps textWithGaps = textWithGapsService.create(text, 50);
 
         return textWithGaps;
     }

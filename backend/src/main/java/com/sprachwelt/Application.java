@@ -39,8 +39,8 @@ public class Application implements CommandLineRunner {
 
         textRepository.deleteAll();
 
-        textService.add("You never know how things will turn out to be");
-
-        System.out.println(textRepository.findAll());
+//        textService.add("You never know how things will turn out to be");
+//
+//        System.out.println(textRepository.findAll());
     }
 }
