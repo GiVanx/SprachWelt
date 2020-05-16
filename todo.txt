@@ -1,0 +1,11 @@
+
+
+1. FRONT/BACK-END: The TextWithGaps.textWithGaps should be a List<Word> not a List<String>
+   Add 'status' field to the Word class and the set the status accordingly.
+   Remove from frontend the logic for setting the status.
+   
+2. FRONTEND: Add a switch between mock data.
+
+3. Read about CORS and understand Backend.AppConf class.
+
+4. BACKEND: Remove TextWithGapsService.getWordGroups().

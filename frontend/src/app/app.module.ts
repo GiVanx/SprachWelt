@@ -12,6 +12,11 @@ import { FormsModule } from '@angular/forms';
 import { WordDisplayComponent } from './word-display/word-display.component';
 import { TextFillGameHeaderComponent } from './text-fill-game-header/text-fill-game-header.component';
 import { MatButtonModule } from '@angular/material/button';
+import { TextInputComponent } from './text-input/text-input.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { TextInputHeaderComponent } from './text-input-header/text-input-header.component';
+import { MatInputModule } from '@angular/material/input';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -22,6 +27,8 @@ import { MatButtonModule } from '@angular/material/button';
     TextFillGameComponent,
     WordDisplayComponent,
     TextFillGameHeaderComponent,
+    TextInputComponent,
+    TextInputHeaderComponent,
   ],
   imports: [
     FormsModule,
@@ -30,6 +37,9 @@ import { MatButtonModule } from '@angular/material/button';
     AppRoutingModule,
     BrowserAnimationsModule,
     MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

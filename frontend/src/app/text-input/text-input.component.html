@@ -1,0 +1,11 @@
+<app-text-input-header (onPlay)="onPlay()"></app-text-input-header>
+
+<div class="row align-center">
+  <mat-form-field appearance="outline">
+    <textarea
+      matInput
+      [(ngModel)]="text"
+      placeholder="Add text here..."
+    ></textarea>
+  </mat-form-field>
+</div>

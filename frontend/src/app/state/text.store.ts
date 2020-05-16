@@ -7,6 +7,7 @@ import { WordStatus } from '../model/word-status';
 import { Word } from '../model/word';
 import { WordUtils } from '../model/word-utils';
 import * as uuid from 'uuid';
+import { textWithGapsMock } from '../mock-data/text-with-gaps.data';
 
 @Injectable({
   providedIn: 'root',
@@ -46,11 +47,18 @@ export class TextStore {
   moveWordFromTextGapToMissingWords(word: Word) {
     let state = this._wordState.getValue();
 
+    console.log('moveWordFromTextGapToMissingWords', 'word', word);
+
     const newTextGap = {
       ...word,
       id: uuid.v4(),
       status: WordStatus.MISSING,
     };
+    console.log(
+      'moveWordFromTextGapToMissingWords',
+      'new text gap',
+      newTextGap
+    );
     state.textWithGaps.replace(word.id, newTextGap);
 
     state.missingWords.add({
@@ -68,6 +76,7 @@ export class TextStore {
     state.textWithGaps.replace(textGap.id, {
       ...missingWord,
       status: WordStatus.TO_BE_EVALUATED,
+      position: textGap.position,
     });
 
     state.missingWords.delete(missingWord);
@@ -77,12 +86,14 @@ export class TextStore {
 
   addTextRequest(text: string) {
     this.wordService.addText(text).subscribe((response) => {
+      console.log('server response', response);
       let state = this._wordState.getValue();
 
       const textWithGaps = this.processWords(
         response.textWithGaps,
         WordStatus.ORIGINAL
       );
+      console.log('text with gaps', textWithGaps);
       state.textWithGaps.addAll(textWithGaps);
 
       const missingWords = this.processWords(
@@ -92,6 +103,7 @@ export class TextStore {
 
       state.wordsToBeEvaluated.push(...missingWords.map((word) => word.id));
       state.missingWords.addAll(missingWords);
+      state.activeTextId = response.textId;
 
       this._wordState.next(state);
     });
@@ -107,9 +119,12 @@ export class TextStore {
       textGapWordEntities.get(wordId)
     );
 
+    console.log('WORDS TO CHECK', wordsToCheck);
+
     this.wordService
       .checkWords(state.activeTextId, wordsToCheck)
       .subscribe((evaluatedWords: Word[]) => {
+        console.log('CHECKED WORDS', evaluatedWords);
         const state = this._wordState.getValue();
 
         for (let word of evaluatedWords) {
@@ -123,6 +138,7 @@ export class TextStore {
 
   processWords(words: Word[], status: WordStatus) {
     words = [...words];
+    console.log(words);
     return words.map((word, position) => {
       if (!word) {
         return new Word(uuid.v4(), null, position, WordStatus.MISSING);

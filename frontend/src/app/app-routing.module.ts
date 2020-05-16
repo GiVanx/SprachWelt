@@ -1,11 +1,27 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { TextInputComponent } from './text-input/text-input.component';
+import { TextFillGameComponent } from './text-fill-game/text-fill-game.component';
 
-
-const routes: Routes = [];
+// TODO: add page not found route
+const routes: Routes = [
+  {
+    path: '',
+    redirectTo: '/text',
+    pathMatch: 'full',
+  },
+  {
+    path: 'text',
+    component: TextInputComponent,
+  },
+  {
+    path: 'text-fill',
+    component: TextFillGameComponent,
+  },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

@@ -4,12 +4,11 @@
 
 const SERVER_URL = 'http://localhost:8080';
 const TEXT_ENDPOINT = SERVER_URL + '/text';
-const TEXT_CHECK_ENDPOINT = SERVER_URL + '/text/check';
 
 export const environment = {
   production: false,
-  textEndpoint: TEXT_ENDPOINT,
-  textCheckEndpoint: TEXT_CHECK_ENDPOINT
+  textEndpoint: () => SERVER_URL + '/text',
+  textCheckEndpoint: (textId) => TEXT_ENDPOINT + '/' + textId + '/check',
 };
 
 /*

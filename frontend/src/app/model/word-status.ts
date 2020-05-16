@@ -1,8 +1,9 @@
 export enum WordStatus {
-  ORIGINAL,
-  TO_BE_EVALUATED,
-  OK,
-  WRONG,
-  MISSING,
-  IDLE,
+  ORIGINAL = 'ORIGINAL',
+  TO_BE_EVALUATED = 'TO_BE_EVALUATED',
+  OK = 'OK',
+  WRONG = 'WRONG',
+  MISSING = 'MISSING',
+  IDLE = 'IDLE',
+  NOT_FOUND = 'NOT_FOUND',
 }
