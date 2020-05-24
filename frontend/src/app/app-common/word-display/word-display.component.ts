@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Word } from '../model/word';
-import { WordStatus } from '../model/word-status';
+import { Word } from '../../model/word';
+import { WordStatus } from '../../model/word-status';
 
 @Component({
   selector: 'app-word-display',

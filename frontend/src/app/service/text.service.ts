@@ -16,12 +16,12 @@ export class TextService {
 
   addText(text: string): Observable<TextWithGaps> {
     console.log('ADD TEXT', text);
-    return this.http.post<TextWithGaps>(environment.textEndpoint(), text);
-    // return of(textWithGapsMock);
+    // return this.http.post<TextWithGaps>(environment.textEndpoint(), text);
+    return of(textWithGapsMock);
   }
 
   checkWords(textId: string, words: Word[]): Observable<Word[]> {
-    return this.http.post<Word[]>(environment.textCheckEndpoint(textId), words);
-    // return of(checkedWordsMock).pipe(debounceTime(2000));
+    // return this.http.post<Word[]>(environment.textCheckEndpoint(textId), words);
+    return of(checkedWordsMock).pipe(debounceTime(2000));
   }
 }

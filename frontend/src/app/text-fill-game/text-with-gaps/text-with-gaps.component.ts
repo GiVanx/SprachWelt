@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TextStore } from '../state/text.store';
-import { Word } from '../model/word';
-import { UiStore } from '../state/ui.store';
-import { WordDisplayComponent } from '../word-display/word-display.component';
+import { TextStore } from '../../state/text.store';
+import { Word } from '../../model/word';
+import { UiStore } from '../../state/ui.store';
+import { WordDisplayComponent } from '../../app-common/word-display/word-display.component';
 
 @Component({
   selector: 'app-text-with-gaps',

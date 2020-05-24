@@ -16,7 +16,10 @@ const routes: Routes = [
   },
   {
     path: 'text-fill',
-    component: TextFillGameComponent,
+    loadChildren: () =>
+      import('./text-fill-game/text-fill-game.module').then(
+        (m) => m.TextFillGameModule
+      ),
   },
 ];
 

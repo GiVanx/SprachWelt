@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TextStore } from '../state/text.store';
+import { TextStore } from '../../state/text.store';
 
 @Component({
   selector: 'app-text-fill-game-header',
