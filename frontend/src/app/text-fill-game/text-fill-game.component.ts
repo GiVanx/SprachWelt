@@ -16,7 +16,7 @@ export class TextFillGameComponent implements OnInit {
     console.log('text fill component');
 
     // TODO: remove this line. It is now used only for testing with mock data.
-    // this.textStore.addTextRequest('');
+    this.textStore.addTextRequest('');
 
     this.uiStore
       .getSelection()

@@ -9,6 +9,7 @@ import { AppCommonModule } from '../app-common/app-common.module';
 import { MatDividerModule } from '@angular/material/divider';
 import { LayoutModule } from '../layout/layout.module';
 import { AppLayoutComponent } from '../layout/app-layout/app-layout.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 const routes: Routes = [
   {
@@ -36,6 +37,7 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     AppCommonModule,
     LayoutModule,
+    FlexLayoutModule,
   ],
   exports: [TextFillGameComponent],
 })

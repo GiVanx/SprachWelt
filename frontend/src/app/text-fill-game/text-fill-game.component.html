@@ -1,14 +1,11 @@
-<div class="row align-right">
+<div fxLayout="row">
   <app-text-fill-game-header></app-text-fill-game-header>
 </div>
 
-<div class="row fill-the-page">
-  <div class="column">
-    <app-text-with-gaps></app-text-with-gaps>
-  </div>
+<div fxLayout="row">
+  <app-text-with-gaps fxFlex="1.5 1 0"></app-text-with-gaps>
 
   <mat-divider [vertical]="true"></mat-divider>
-  <div class="column">
-    <app-missing-words></app-missing-words>
-  </div>
+
+  <app-missing-words fxFlex="1 1 0"></app-missing-words>
 </div>
