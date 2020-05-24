@@ -7,11 +7,19 @@ import { TextWithGapsComponent } from './text-with-gaps/text-with-gaps.component
 import { Routes, RouterModule } from '@angular/router';
 import { AppCommonModule } from '../app-common/app-common.module';
 import { MatDividerModule } from '@angular/material/divider';
+import { LayoutModule } from '../layout/layout.module';
+import { AppLayoutComponent } from '../layout/app-layout/app-layout.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: TextFillGameComponent,
+    component: AppLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: TextFillGameComponent,
+      },
+    ],
   },
 ];
 
@@ -27,6 +35,7 @@ const routes: Routes = [
     MatDividerModule,
     RouterModule.forChild(routes),
     AppCommonModule,
+    LayoutModule,
   ],
   exports: [TextFillGameComponent],
 })

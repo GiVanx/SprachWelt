@@ -12,7 +12,9 @@ export class TextInputComponent implements OnInit {
 
   constructor(private textStore: TextStore, private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    console.log('text input component');
+  }
 
   onPlay() {
     console.log('ON PLAY', this.text);

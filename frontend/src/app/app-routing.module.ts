@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { TextInputComponent } from './text-input/text-input.component';
 import { TextFillGameComponent } from './text-fill-game/text-fill-game.component';
+import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
 
 // TODO: add page not found route
 const routes: Routes = [
@@ -12,7 +13,13 @@ const routes: Routes = [
   },
   {
     path: 'text',
-    component: TextInputComponent,
+    component: AppLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: TextInputComponent,
+      },
+    ],
   },
   {
     path: 'text-fill',

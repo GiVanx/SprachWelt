@@ -18,6 +18,8 @@ import { TextInputHeaderComponent } from './text-input-header/text-input-header.
 import { MatInputModule } from '@angular/material/input';
 import { HttpClientModule } from '@angular/common/http';
 import { TextFillGameModule } from './text-fill-game/text-fill-game.module';
+import { AppFooterComponent } from './layout/app-footer/app-footer.component';
+import { LayoutModule } from './layout/layout.module';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,7 @@ import { TextFillGameModule } from './text-fill-game/text-fill-game.module';
     MatInputModule,
     HttpClientModule,
     TextFillGameModule,
+    LayoutModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
