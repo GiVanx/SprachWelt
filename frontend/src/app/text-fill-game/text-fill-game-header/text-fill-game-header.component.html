@@ -1,22 +1,31 @@
 <div fxLayout="row" fxLayoutAlign="space-between start">
-  <div>
-    <button mat-raised-button color="primary">
-      Easy
-    </button>
-    <button mat-raised-button color="primary">
-      Medium
-    </button>
-    <button mat-raised-button color="primary">
-      Hard
-    </button>
-  </div>
+  <mat-button-toggle-group
+    name="difficultyLevel"
+    (change)="onDifficultyChange($event)"
+  >
+    <mat-button-toggle
+      class="easy"
+      value="{{ difficultyEnum().EASY }}"
+      [checked]="true"
+      >Easy</mat-button-toggle
+    >
+    <mat-button-toggle value="{{ difficultyEnum().MEDIUM }}" class="medium"
+      >Medium</mat-button-toggle
+    >
+    <mat-button-toggle value="{{ difficultyEnum().HARD }}" class="hard"
+      >Hard</mat-button-toggle
+    >
+  </mat-button-toggle-group>
 
-  <div>
+  <div class="control-button-group">
     <button mat-raised-button color="primary">
       Remix
     </button>
     <button mat-raised-button color="primary" (click)="onCheckButtonClicked()">
       Check
+    </button>
+    <button mat-raised-button color="primary">
+      Start
     </button>
   </div>
 </div>

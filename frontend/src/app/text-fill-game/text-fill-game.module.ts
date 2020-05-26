@@ -10,6 +10,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { LayoutModule } from '../layout/layout.module';
 import { AppLayoutComponent } from '../layout/app-layout/app-layout.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatButtonModule } from '@angular/material/button';
 
 const routes: Routes = [
   {
@@ -32,6 +34,8 @@ const routes: Routes = [
     TextFillGameComponent,
   ],
   imports: [
+    MatButtonModule,
+    MatButtonToggleModule,
     CommonModule,
     MatDividerModule,
     RouterModule.forChild(routes),
