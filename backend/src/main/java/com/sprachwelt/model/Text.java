@@ -1,33 +1,22 @@
 package com.sprachwelt.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Builder;
+import lombok.Data;
 
+import javax.persistence.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Document
+@Data
+@Builder
+@Entity
+@Table(name = "text")
 public class Text {
+
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
+    @OneToMany(mappedBy = "text")
     private List<Word> words;
-
-    public Text(List<Word> words) {
-        this.words = words;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public List<Word> getWords() {
-        return words;
-    }
-
-    @Override
-    public String toString() {
-        return "Text{id:"+ id + ", words: [" + words.stream().map(word -> word.toString()).collect(Collectors.joining(",")) + "]}";
-    }
 }
+

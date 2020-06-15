@@ -5,21 +5,14 @@ import com.sprachwelt.model.Word;
 import com.sprachwelt.model.WordStatus;
 import com.sprachwelt.repository.TextRepository;
 import com.sprachwelt.view.WordStatusView;
-import org.bson.Document;
-import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
 public class TextService {
@@ -28,21 +21,17 @@ public class TextService {
     private TextRepository textRepository;
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private ModelMapper modelMapper;
 
     public Text add(String textString) {
 
         List<Word> textWords = getTextWords(textString);
-        Text text = new Text(textWords);
-
-        return textRepository.save(text);
+        Text text =  Text.builder().words(textWords).build();
+        //TODO: re-implement
+        return null;
     }
 
     /**
-     * db.text.aggregate([
-     * { $match: { _id: ObjectId("5e774e316a023c50b8569ce5")}},
-     * { $project: { words: {$filter: {input:"$words", as: "word", cond: {$in: ["$$word._id",  [ ObjectId("5e774e316a023c50b8569cdc"), ObjectId("5e774e316a023c50b8569ce4")]] } } } }}
-     * ])
      *
      * @param textId
      * @param words
@@ -50,12 +39,10 @@ public class TextService {
      */
     public List<WordStatusView> checkWords(String textId, List<Word> words) {
 
-        Text text = getTextWords(textId, words.stream().map(Word::getText).collect(Collectors.toList()));
-
-        System.out.println("text" + text);
+        Text text = getTextWords(textId, words.stream().map(Word::getContent).collect(Collectors.toList()));
 
         Map<String, Map<Integer, Word>> wordMap = text.getWords()
-                .stream().collect(Collectors.groupingBy(Word::getText,
+                .stream().collect(Collectors.groupingBy(Word::getContent,
                         Collectors.mapping(word -> word, Collectors.toMap(Word::getPosition, word -> word))));
 
         List<WordStatusView> statusList = new ArrayList<>();
@@ -65,35 +52,26 @@ public class TextService {
         for (Word wordToCheck : words) {
 
             WordStatus status = WordStatus.NOT_FOUND;
-            if (wordMap.containsKey(wordToCheck.getText())) {
+            if (wordMap.containsKey(wordToCheck.getContent())) {
 
-                if (wordMap.get(wordToCheck.getText()).containsKey(wordToCheck.getPosition())) {
+                if (wordMap.get(wordToCheck.getContent()).containsKey(wordToCheck.getPosition())) {
                     status = WordStatus.OK;
                 } else {
                     status = WordStatus.WRONG;
                 }
             }
-            statusList.add(new WordStatusView(wordToCheck.getId(), wordToCheck.getText(), status, wordToCheck.getPosition()));
 
+            WordStatusView wordStatusView = modelMapper.map(wordToCheck, WordStatusView.class);
+            wordStatusView.setStatus(status);
+            statusList.add(wordStatusView);
         }
         return statusList;
     }
 
     private Text getTextWords(String textId, List<String> words) {
-        MatchOperation matchOperation = match(Criteria.where("_id").is(new ObjectId(textId)));
-        ProjectionOperation projectionOperation =
-                project().and((AggregationOperationContext context) -> {
-                    Document filterExpression = new Document();
-                    filterExpression.put("input", "$words");
-                    filterExpression.put("as", "word");
-                    filterExpression.put("cond", new Document("$in",
-                            Arrays.<Object>asList("$$word.text", words)));
-                    return new Document("$filter", filterExpression);
-                }).as("words");
 
-        Aggregation aggregation = newAggregation(matchOperation, projectionOperation);
-        AggregationResults<Text> result = mongoTemplate.aggregate(aggregation, "text", Text.class);
-        return result.getUniqueMappedResult();
+        //TODO: re-implement
+        return null;
     }
 
     private List<Word> getTextWords(String text) {
@@ -110,21 +88,21 @@ public class TextService {
                 currentWord.append(c);
             } else {
                 if (currentWord.length() != 0) {
-                    word = new Word(new ObjectId().toString(), currentWord.toString(), wordPosition++);
+                    word = Word.builder().content(currentWord.toString()).position(wordPosition++).build();
                     words.add(word);
                     currentWord = new StringBuffer();
                 }
 
                 if (c != 32) {
                     System.out.println("-" + (int) c + "-" + wordPosition);
-                    word = new Word(new ObjectId().toString(), Character.toString(c), wordPosition++);
+                    word = Word.builder().content(currentWord.toString()).position(wordPosition++).build();;
                     words.add(word);
                 }
             }
         }
 
         if (currentWord.length() != 0) {
-            word = new Word(new ObjectId().toString(), currentWord.toString(), wordPosition);
+            word = Word.builder().content(currentWord.toString()).position(wordPosition++).build();
             words.add(word);
         }
 

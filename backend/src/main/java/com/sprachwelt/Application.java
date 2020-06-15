@@ -1,22 +1,14 @@
 package com.sprachwelt;
 
-import com.sprachwelt.model.Text;
 import com.sprachwelt.repository.TextRepository;
 import com.sprachwelt.service.TextService;
 import com.sprachwelt.service.TextWithGapsService;
-import org.bson.types.ObjectId;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
-
-import java.util.List;
-
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.unwind;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class Application implements CommandLineRunner {
@@ -32,6 +24,11 @@ public class Application implements CommandLineRunner {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+    }
+
+    @Bean
+    public ModelMapper getModelMapper() {
+        return new ModelMapper();
     }
 
     @Override
