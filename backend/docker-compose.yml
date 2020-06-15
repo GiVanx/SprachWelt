@@ -1,13 +1,39 @@
-version: '3'
+version: '3.5'
+
 services:
-    database:
-        build: .
+    postgres:
+        container_name: postgres_container
+        image: postgres
         environment:
-            - MONGO_INITDB_DATABASE=sprach-welt
-            - MONGO_INITDB_ROOT_USERNAME=givanx
-            - MONGO_INITDB_ROOT_PASSWORD=root
-            - ABCDEF=${PWD}
+            POSTGRES_USER: ${POSTGRES_USER:-postgres}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-root}
+            PGDATA: /data/postgres
         volumes:
-            - ./init-mongodb.js:/docker-entrypoint-initdb.d/init-mongo.js
+            - postgres:/data/postgres
         ports:
-            - '27017-27019:27017-27019'
+            - "5432:5432"
+        networks:
+            - postgres
+        restart: unless-stopped
+
+    pgadmin:
+        container_name: pgadmin_container
+        image: dpage/pgadmin4
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+        volumes:
+            - pgadmin:/root/.pgadmin
+        ports:
+            - "${PGADMIN_PORT:-5050}:80"
+        networks:
+            - postgres
+        restart: unless-stopped
+
+networks:
+    postgres:
+        driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:
