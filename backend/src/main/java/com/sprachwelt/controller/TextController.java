@@ -3,14 +3,12 @@ package com.sprachwelt.controller;
 import com.sprachwelt.model.Text;
 import com.sprachwelt.model.TextWithGaps;
 import com.sprachwelt.model.Word;
-import com.sprachwelt.model.WordStatus;
 import com.sprachwelt.service.TextService;
 import com.sprachwelt.service.TextWithGapsService;
 import com.sprachwelt.view.WordStatusView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,8 +23,7 @@ public class TextController {
     @PostMapping
     public TextWithGaps addText(@RequestBody String textString) {
 
-        Text text = textService.add(textString);
-        System.out.println("TEXXXXXT: " + text);
+        Text text = textService.save(textString);
 
         TextWithGaps textWithGaps = textWithGapsService.create(text, 50);
 

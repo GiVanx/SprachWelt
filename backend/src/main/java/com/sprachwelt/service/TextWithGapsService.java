@@ -21,15 +21,11 @@ public class TextWithGapsService {
     private ModelMapper modelMapper;
 
     /**
-     * db.text.aggregate([ { $match: { _id: ObjectId("5e7732d8ff33e54747fe1ed4")}}, { $unwind: "$words" }, { $group: { _id:"$words.word", wordIds: { $push: "$words._id" } } }  ])
      * @param text
      * @param wordPresenceProbabilityPercent
      * @return
      */
     public TextWithGaps create(Text text, int wordPresenceProbabilityPercent) {
-
-        Long textId = text.getId();
-//TODO:        text = textRepository.findById(text.getId()).orElseThrow(() -> new TextNotFound(textId));
 
         List<WordView> textWithGaps = new ArrayList<>();
         Set<WordView> missingWords = new HashSet<>();
@@ -39,6 +35,7 @@ public class TextWithGapsService {
         for (Word word : text.getWords()) {
 
             WordView wordView = modelMapper.map(word, WordView.class);
+
             // check if this is a word
             if (word.getContent().matches("^[a-zA-Z0-9\\-äöüÄÖÜß]*$")
                     && random.nextInt(100) < wordPresenceProbabilityPercent) {

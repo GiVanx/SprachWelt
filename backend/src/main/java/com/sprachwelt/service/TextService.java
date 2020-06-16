@@ -23,16 +23,16 @@ public class TextService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public Text add(String textString) {
+
+    public Text save(String textString) {
 
         List<Word> textWords = getTextWords(textString);
-        Text text =  Text.builder().words(textWords).build();
-        //TODO: re-implement
-        return null;
+        Text text = Text.builder().words(textWords).build();
+        text.getWords().forEach(word -> word.setText(text));
+        return textRepository.save(text);
     }
 
     /**
-     *
      * @param textId
      * @param words
      * @returns
@@ -95,7 +95,7 @@ public class TextService {
 
                 if (c != 32) {
                     System.out.println("-" + (int) c + "-" + wordPosition);
-                    word = Word.builder().content(currentWord.toString()).position(wordPosition++).build();;
+                    word = Word.builder().content(Character.toString(c)).position(wordPosition++).build();
                     words.add(word);
                 }
             }
@@ -105,8 +105,6 @@ public class TextService {
             word = Word.builder().content(currentWord.toString()).position(wordPosition++).build();
             words.add(word);
         }
-
         return words;
     }
-
 }
