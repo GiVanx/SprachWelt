@@ -20,6 +20,11 @@ public class TextController {
     @Autowired
     private TextWithGapsService textWithGapsService;
 
+    @GetMapping
+    public void get() {
+
+    }
+
     @PostMapping
     public TextWithGaps addText(@RequestBody String textString) {
 
