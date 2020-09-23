@@ -20,6 +20,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TextFillGameModule } from './text-fill-game/text-fill-game.module';
 import { AppFooterComponent } from './layout/app-footer/app-footer.component';
 import { LayoutModule } from './layout/layout.module';
+import { LoginModule } from './login/login.module';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { LayoutModule } from './layout/layout.module';
     HttpClientModule,
     TextFillGameModule,
     LayoutModule,
+    LoginModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
