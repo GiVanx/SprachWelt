@@ -21,6 +21,7 @@ import { TextFillGameModule } from './text-fill-game/text-fill-game.module';
 import { AppFooterComponent } from './layout/app-footer/app-footer.component';
 import { LayoutModule } from './layout/layout.module';
 import { LoginModule } from './login/login.module';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { LoginModule } from './login/login.module';
     TextEditComponent,
     TextInputComponent,
     TextInputHeaderComponent,
+    HomeComponent,
   ],
   imports: [
     FormsModule,
