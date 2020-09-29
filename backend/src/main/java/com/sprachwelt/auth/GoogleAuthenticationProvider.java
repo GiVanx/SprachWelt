@@ -29,6 +29,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
+        System.out.println("Trying to authenticate with GoogleAuthenticationProvider");
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
                 .setAudience(Collections.singletonList(clientId)).build();
 
@@ -56,7 +57,7 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         return (String) (idTokenPayload.get(property));
     }
 
-    private CustomOAuth2AuthenticationToken getToken(GoogleIdToken.Payload idTokenPayload) {
+    private CustomAuthenticationToken getToken(GoogleIdToken.Payload idTokenPayload) {
 
         User user = userRepository.findByEmail(idTokenPayload.getEmail());
         if (user == null) {
@@ -64,6 +65,6 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
                     .name(get(idTokenPayload, NAME)).picture(get(idTokenPayload, PICTURE)).build();
             user = userRepository.save(user);
         }
-        return new CustomOAuth2AuthenticationToken(user);
+        return new CustomAuthenticationToken(user);
     }
 }

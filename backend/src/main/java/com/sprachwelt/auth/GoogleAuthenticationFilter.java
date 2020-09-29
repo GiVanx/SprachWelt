@@ -1,16 +1,19 @@
 package com.sprachwelt.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sprachwelt.auth.dto.TokensDto;
 import com.sprachwelt.auth.model.GoogleAuthenticationIdToken;
 import com.sprachwelt.auth.model.User;
 import com.sprachwelt.auth.repository.UserRepository;
+import com.sprachwelt.auth.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +23,9 @@ public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessing
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtService tokenService;
 
     @Autowired
     @Override
@@ -32,18 +38,28 @@ public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessing
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 
-        String idTokenString = httpServletRequest.getParameter("googleIdToken");
+        System.out.println("GoogleAuthFilter: Attempt auth");
+
+        String idTokenString = request.getParameter("idToken");
 
         if (idTokenString != null) {
             return getAuthenticationManager().authenticate(new GoogleAuthenticationIdToken(null, idTokenString));
         } else {
+            System.out.println("'idToken' not found. Setting dummy user.");
             // used only for testing
-            CustomOAuth2AuthenticationToken token = new CustomOAuth2AuthenticationToken(createDummy());
+            CustomAuthenticationToken token = new CustomAuthenticationToken(createDummy());
             SecurityContextHolder.getContext().setAuthentication(token);
+            token.setAuthenticated(true);
+            System.out.println("SecurityContext is now set!");
             return token;
         }
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        chain.doFilter(request, response);
     }
 
     private User createDummy() {
