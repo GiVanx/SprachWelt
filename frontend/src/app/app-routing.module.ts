@@ -3,13 +3,19 @@ import { Routes, RouterModule } from '@angular/router';
 import { TextInputComponent } from './text-input/text-input.component';
 import { TextFillGameComponent } from './text-fill-game/text-fill-game.component';
 import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
+import { LoginComponent } from './login/login.component';
+import { AuthGuardService } from './login/service/auth-guard.service';
+import { HomeComponent } from './home/home.component';
 
 // TODO: add page not found route
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/text',
-    pathMatch: 'full',
+    component: HomeComponent,
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
   },
   {
     path: 'text',
@@ -20,6 +26,7 @@ const routes: Routes = [
         component: TextInputComponent,
       },
     ],
+    canActivate: [AuthGuardService],
   },
   {
     path: 'text-fill',
@@ -27,6 +34,11 @@ const routes: Routes = [
       import('./text-fill-game/text-fill-game.module').then(
         (m) => m.TextFillGameModule
       ),
+    canActivate: [AuthGuardService],
+  },
+  {
+    path: '**',
+    redirectTo: '',
   },
 ];
 
