@@ -1,17 +1,22 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { TextInputComponent } from './text-input/text-input.component';
-import { TextFillGameComponent } from './text-fill-game/text-fill-game.component';
 import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
 import { LoginComponent } from './login/login.component';
-import { AuthGuardService } from './login/service/auth-guard.service';
+import { AuthGuardService } from './login/guard/auth-guard.service';
 import { HomeComponent } from './home/home.component';
 
 // TODO: add page not found route
 const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
+    component: AppLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: HomeComponent,
+      },
+    ],
   },
   {
     path: 'login',

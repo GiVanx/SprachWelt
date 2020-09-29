@@ -3,12 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 const SERVER_URL = 'http://localhost:8080';
-const TEXT_ENDPOINT = SERVER_URL + '/text';
+const TEXT_ENDPOINT = SERVER_URL + '/text'; // TODO: remove this line??
 
 export const environment = {
   production: false,
+  serverUrl: SERVER_URL,
   textEndpoint: () => SERVER_URL + '/text',
   textCheckEndpoint: (textId) => TEXT_ENDPOINT + '/' + textId + '/check',
+  googleLoginEndpoint: SERVER_URL + '/login/google',
+  refreshTokenEndpoint: SERVER_URL + '/login/refresh-token',
 };
 
 /*

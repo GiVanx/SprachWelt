@@ -1,3 +1,3 @@
 export interface LoginProvider {
-  authenticate();
+  authenticate(): Promise<string>;
 }

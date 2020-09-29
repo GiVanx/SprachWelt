@@ -19,8 +19,7 @@ export class GoogleLoginProviderService implements LoginProvider {
     return pload.then(async () => {
       await gapi.auth2
         .init({
-          client_id:
-            '544207670281-10d4jci7e18aqaug9e7h18t80tp5r33d.apps.googleusercontent.com',
+          client_id: 'CLIENT_ID',
         })
         .then((auth) => {
           this.gapiSetup = true;
@@ -29,16 +28,20 @@ export class GoogleLoginProviderService implements LoginProvider {
     });
   }
 
-  async authenticate(): Promise<gapi.auth2.GoogleUser> {
+  async authenticate(): Promise<string> {
     if (!this.gapiSetup) {
       await this.initGoogleAuth();
     }
 
-    return new Promise(async () => {
-      await this.authInstance.signIn().then(
-        (user) => console.log('USER', user),
-        (error) => console.log('ERROR', error)
-      );
-    });
+    return await this.authInstance.signIn().then(
+      (user) => {
+        console.log('id_token', user.getAuthResponse().id_token);
+        return user.getAuthResponse().id_token;
+      },
+      (error) => {
+        console.log('ERROR', error);
+        return '';
+      }
+    );
   }
 }
