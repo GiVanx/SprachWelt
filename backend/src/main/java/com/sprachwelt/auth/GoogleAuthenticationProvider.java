@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class GoogleAuthenticationProvider implements AuthenticationProvider {
@@ -23,15 +24,20 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private UserRepository userRepository;
 
-    @Value("spring.security.oauth2.client.registration.google.client-id")
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
+
+    @Override
+    public boolean supports(Class<?> aClass) {
+        return GoogleAuthenticationIdToken.class.isAssignableFrom(aClass);
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         System.out.println("Trying to authenticate with GoogleAuthenticationProvider");
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-                .setAudience(Collections.singletonList(clientId)).build();
+                .setAudience(Arrays.asList(clientId)).build();
 
         GoogleAuthenticationIdToken authIdToken = (GoogleAuthenticationIdToken) authentication;
 
@@ -39,18 +45,15 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
             GoogleIdToken idToken = verifier.verify(authIdToken.getIdToken());
 
             if (idToken != null) {
-                return getToken(idToken.getPayload());
+                CustomAuthenticationToken authToken = getToken(idToken.getPayload());
+                authToken.setAuthenticated(true);
+                return authToken;
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public boolean supports(Class<?> aClass) {
-        return aClass.isAssignableFrom(GoogleAuthenticationIdToken.class);
     }
 
     private String get(GoogleIdToken.Payload idTokenPayload, String property) {

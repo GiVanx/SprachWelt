@@ -40,21 +40,24 @@ public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessing
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 
-        System.out.println("GoogleAuthFilter: Attempt auth");
+        System.out.println("GoogleAuthFilter: Attempt authentication");
 
-        String idTokenString = request.getParameter("idToken");
+        String idTokenString = request.getHeader("idToken");
+
+        Authentication authToken;
 
         if (idTokenString != null) {
-            return getAuthenticationManager().authenticate(new GoogleAuthenticationIdToken(null, idTokenString));
+            authToken = getAuthenticationManager().authenticate(new GoogleAuthenticationIdToken(null, idTokenString));
         } else {
             System.out.println("'idToken' not found. Setting dummy user.");
             // used only for testing
-            CustomAuthenticationToken token = new CustomAuthenticationToken(createDummy());
-            SecurityContextHolder.getContext().setAuthentication(token);
-            token.setAuthenticated(true);
-            System.out.println("SecurityContext is now set!");
-            return token;
+            authToken = new CustomAuthenticationToken(createDummy());
+            authToken.setAuthenticated(true);
         }
+
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+        System.out.println("SecurityContext is now set!");
+        return authToken;
     }
 
     @Override

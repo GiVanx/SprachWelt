@@ -18,6 +18,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     private JwtService jwtService;
 
     @Override
+    public boolean supports(Class<?> aClass) {
+        return JwtAuthenticationToken.class.isAssignableFrom(aClass);
+    }
+
+    @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         System.out.println("Trying to authenticate with JwtAuthenticationProvider");
@@ -31,16 +36,13 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
             if (user != null) {
                 System.out.println("Security context is now set!");
-                return new CustomAuthenticationToken(user);
+                CustomAuthenticationToken authToken = new CustomAuthenticationToken(user);
+                authToken.setAuthenticated(true);
+                return authToken;
             }
         }
 
         return null;
-    }
-
-    @Override
-    public boolean supports(Class<?> aClass) {
-        return JwtAuthenticationToken.class.isAssignableFrom(aClass);
     }
 
     private User findUser(String email) {
