@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { LoginComponent } from './login.component';
 import { AuthServiceConfig } from './service/auth-service.config';
@@ -22,5 +23,6 @@ const authConfig = () =>
       useFactory: authConfig,
     },
   ],
+  imports: [HttpClientModule],
 })
 export class LoginModule {}
