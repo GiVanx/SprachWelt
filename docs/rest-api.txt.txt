@@ -24,7 +24,7 @@ Response:
 			{
 				id: number;
 				content: string;
-				status: WordStatus;
+				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
 			}
 		]
 	}
@@ -43,7 +43,7 @@ POST /api/game/{id}/start
 
 Response:
 
---> If game with {id} doesn't exist
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
 
 	401 Not Found
 
@@ -60,11 +60,13 @@ Response:
 			}
 		],
 		textWithGaps: [
+			null,
 			{
 				id: number;
 				content: string;
 				status: WordStatus.ORIGINAL;
-			}
+			},
+			null
 		]
 	}
 
@@ -78,7 +80,7 @@ no body
 
 Response:
 
---> If game with {id} doesn't exist
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
 
 	401 Not Found
 
@@ -95,11 +97,13 @@ Response:
 			}
 		],
 		textWithGaps: [
+			null,
 			{
 				id: number;
 				content: string;
 				status: WordStatus.ORIGINAL;
-			}
+			},
+			null
 		]
 	}
 
@@ -129,14 +133,14 @@ Request:
 			{
 				id: number;
 				content: string;
-				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED
+				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
 			}
 		]
 	}
 
 Response:
 
---> If game with {id} doesn't exist
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
 
 	401 Not Found
 
@@ -155,7 +159,7 @@ Response:
 			{
 				id: number;
 				content: string;
-				status: WordStatus;  // ORIGINAL / TO_BE_EVALUATED
+				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
 			}
 		]
 	}
@@ -174,28 +178,37 @@ POST /api/game/{id}/check
 	}
 ]
 
---> If game with {id} doesn't exist
+Sending only the words that have to be evaluated (not the entire text with the original words).
+
+Response:
+
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
 
 401 Not Found
 
 --> If game with {id} exists
+	
+	--> If all the gaps were filled:
 
-Response:
+		[
+			{
+				id: number;
+				content: string;
+				position: number;
+				status: WordStatus; // OK / WRONG
+			}
+		]
 
-[
-	{
-		id: number;
-		content: string;
-		position: number;
-		status: WordStatus; // OK / WRONG
-	}
-]
+	--> If not all the gaps were filled:
+	
+		403 Bad Request:
+			Text cannot be checked at this point. Not all the word gaps were filled.
 
 6. Cancel
 
 PUT /api/game/{id}/cancel
 
---> If game with {id} doesn't exist
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
 
 	401 Not Found
 
@@ -203,14 +216,3 @@ PUT /api/game/{id}/cancel
 
 	It will remove the game and the
 	text from the database.
-
-
-
-
-
-
-
-
-
-
-
