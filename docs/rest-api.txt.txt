@@ -37,6 +37,35 @@ Response:
 
 Request:
 
+	POST /api/game
+
+	no body
+
+Response:
+
+	{
+		id: number,
+		status: STARTED,
+		missingWords: [
+			{
+				id: number;
+				content: string;
+			}
+		],
+		textWithGaps: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus.ORIGINAL;
+				position: number;
+			}
+		]
+	}
+
+2. Start an existing game
+
+Request:
+
 POST /api/game/{id}/start
 
 	The text content
@@ -60,13 +89,12 @@ Response:
 			}
 		],
 		textWithGaps: [
-			null,
 			{
 				id: number;
 				content: string;
 				status: WordStatus.ORIGINAL;
-			},
-			null
+				position: number;
+			}
 		]
 	}
 
@@ -93,17 +121,15 @@ Response:
 			{
 				id: number;
 				content: string;
-				status: WordStatus.IDLE;
 			}
 		],
 		textWithGaps: [
-			null,
 			{
 				id: number;
 				content: string;
 				status: WordStatus.ORIGINAL;
-			},
-			null
+				position: number;
+			}
 		]
 	}
 
@@ -126,7 +152,6 @@ Request:
 			{
 				id: number;
 				content: string;
-				status: WordStatus.IDLE;
 			}
 		],
 		textWithGaps: [
@@ -134,6 +159,7 @@ Request:
 				id: number;
 				content: string;
 				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
+				position: number;
 			}
 		]
 	}
@@ -152,7 +178,6 @@ Response:
 			{
 				id: number;
 				content: string;
-				status: WordStatus.IDLE;
 			}
 		],
 		textWithGaps: [
@@ -160,6 +185,7 @@ Response:
 				id: number;
 				content: string;
 				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
+				position: number;
 			}
 		]
 	}
