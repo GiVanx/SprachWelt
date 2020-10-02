@@ -10,9 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class WordView {
+public class MissingWordView {
     private Long id;
     private String content;
-    private Integer position;
     private WordStatus status;
 }

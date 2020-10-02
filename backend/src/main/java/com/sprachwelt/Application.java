@@ -2,7 +2,7 @@ package com.sprachwelt;
 
 import com.sprachwelt.repository.TextRepository;
 import com.sprachwelt.service.TextService;
-import com.sprachwelt.service.TextWithGapsService;
+import com.sprachwelt.service.GameService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -22,7 +22,7 @@ public class Application implements CommandLineRunner {
     private TextService textService;
 
     @Autowired
-    private TextWithGapsService textWithGapsService;
+    private GameService gameService;
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

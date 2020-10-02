@@ -20,4 +20,6 @@ public class Word {
 
     private String content;
     private Integer position;
+
+    private WordStatus status;
 }
