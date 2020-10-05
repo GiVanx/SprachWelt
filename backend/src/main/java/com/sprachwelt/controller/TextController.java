@@ -1,14 +1,13 @@
 package com.sprachwelt.controller;
 
 import com.sprachwelt.auth.model.User;
-import com.sprachwelt.auth.repository.UserRepository;
-import com.sprachwelt.model.Text;
 import com.sprachwelt.model.Game;
+import com.sprachwelt.model.Text;
 import com.sprachwelt.model.Word;
+import com.sprachwelt.repository.GameFacade;
 import com.sprachwelt.repository.GameRepository;
 import com.sprachwelt.repository.TextRepositoryFacade;
 import com.sprachwelt.service.TextService;
-import com.sprachwelt.service.GameService;
 import com.sprachwelt.service.UserFacade;
 import com.sprachwelt.view.GameView;
 import com.sprachwelt.view.WordStatusView;
@@ -25,7 +24,7 @@ public class TextController {
     @Autowired
     private TextService textService;
     @Autowired
-    private GameService gameService;
+    private GameFacade gameFacade;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -47,9 +46,7 @@ public class TextController {
 
         text = textRepositoryFacade.save(text);
 
-        Game game = gameService.create(text, 50);
-
-        game = gameRepository.save(game);
+        Game game = gameFacade.create(text, 50);
 
         User user = userFacade.getActiveUser();
         user.setGame(game);
@@ -57,6 +54,11 @@ public class TextController {
         userFacade.save(user);
 
         return modelMapper.map(game, GameView.class);
+    }
+
+    @PutMapping("{id}/start")
+    public GameView startGame(@PathVariable("id") Long id) {
+        return modelMapper.map(gameFacade.start(id), GameView.class);
     }
 
     @PostMapping("{id}/check")
