@@ -37,6 +37,7 @@ public class GameService {
             if (word.getContent().matches("^[a-zA-Z0-9\\-äöüÄÖÜß]*$")
                     && random.nextInt(100) < wordPresenceProbability) {
 
+                word.setStatus(WordStatus.IDLE);
                 missingWords.add(word);
             } else {
                 word.setStatus(WordStatus.ORIGINAL);
