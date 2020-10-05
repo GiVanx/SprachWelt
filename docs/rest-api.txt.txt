@@ -39,13 +39,13 @@ Request:
 
 	POST /api/game
 
-	no body
+		Text content
 
 Response:
 
 	{
 		id: number,
-		status: STARTED,
+		status: NOT_STARTED,
 		missingWords: [
 			{
 				id: number;
@@ -66,9 +66,7 @@ Response:
 
 Request:
 
-POST /api/game/{id}/start
-
-	The text content
+PUT /api/game/{id}/start
 
 Response:
 
