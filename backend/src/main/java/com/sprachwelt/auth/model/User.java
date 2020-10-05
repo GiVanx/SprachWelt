@@ -1,11 +1,9 @@
 package com.sprachwelt.auth.model;
 
+import com.sprachwelt.model.Game;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name = "app_user")
 @Builder
@@ -22,4 +20,7 @@ public class User {
     private String email;
     private String name;
     private String picture;
+
+    @ManyToOne
+    private Game game;
 }

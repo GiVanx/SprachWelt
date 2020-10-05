@@ -1,10 +1,15 @@
 package com.sprachwelt.controller;
 
+import com.sprachwelt.auth.model.User;
+import com.sprachwelt.auth.repository.UserRepository;
 import com.sprachwelt.model.Text;
 import com.sprachwelt.model.Game;
 import com.sprachwelt.model.Word;
+import com.sprachwelt.repository.GameRepository;
+import com.sprachwelt.repository.TextRepositoryFacade;
 import com.sprachwelt.service.TextService;
 import com.sprachwelt.service.GameService;
+import com.sprachwelt.service.UserFacade;
 import com.sprachwelt.view.GameView;
 import com.sprachwelt.view.WordStatusView;
 import org.modelmapper.ModelMapper;
@@ -23,18 +28,33 @@ public class TextController {
     private GameService gameService;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private TextRepositoryFacade textRepositoryFacade;
+    @Autowired
+    private UserFacade userFacade;
+    @Autowired
+    private GameRepository gameRepository;
 
-    @GetMapping
-    public Game getActiveGame() {
-        return null;
+    @GetMapping("/active")
+    public GameView getActiveGame() {
+        return modelMapper.map(this.userFacade.getActiveUser().getGame(), GameView.class);
     }
 
     @PostMapping
-    public GameView addText(@RequestBody String textString) {
+    public GameView createGame(@RequestBody String textString) {
 
-        Text text = textService.save(textString);
+        Text text = textService.tokenize(textString);
+
+        text = textRepositoryFacade.save(text);
 
         Game game = gameService.create(text, 50);
+
+        game = gameRepository.save(game);
+
+        User user = userFacade.getActiveUser();
+        user.setGame(game);
+
+        userFacade.save(user);
 
         return modelMapper.map(game, GameView.class);
     }

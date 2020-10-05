@@ -1,12 +1,7 @@
 package com.sprachwelt.service;
 
-import com.sprachwelt.model.Text;
-import com.sprachwelt.model.Game;
-import com.sprachwelt.model.Word;
-import com.sprachwelt.model.WordStatus;
+import com.sprachwelt.model.*;
 import com.sprachwelt.repository.GameRepository;
-import com.sprachwelt.repository.TextRepository;
-import com.sprachwelt.view.WordView;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +10,6 @@ import java.util.*;
 
 @Service
 public class GameService {
-
-    @Autowired
-    private TextRepository textRepository;
 
     @Autowired
     private GameRepository gameRepository;
@@ -51,7 +43,7 @@ public class GameService {
             ++i;
         }
 
-        Game game = Game.builder().text(text).missingWords(missingWords).textWithGaps(textWithGaps).build();
-        return gameRepository.save(game);
+        return Game.builder().text(text).missingWords(missingWords).textWithGaps(textWithGaps).
+                status(GameStatus.NOT_STARTED).build();
     }
 }

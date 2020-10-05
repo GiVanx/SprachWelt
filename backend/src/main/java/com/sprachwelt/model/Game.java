@@ -7,19 +7,27 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "text")
-public class Text {
+@Entity(name = "game")
+public class Game {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToMany(mappedBy = "text", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<Word> words;
+    private GameStatus status;
+
+    @OneToOne
+    private Text text;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<Word> missingWords;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Word> textWithGaps;
 }

@@ -24,12 +24,9 @@ public class TextService {
     private ModelMapper modelMapper;
 
 
-    public Text save(String textString) {
-
+    public Text tokenize(String textString) {
         List<Word> textWords = getTextWords(textString);
-        Text text = Text.builder().words(textWords).build();
-        text.getWords().forEach(word -> word.setText(text));
-        return textRepository.save(text);
+        return Text.builder().words(textWords).build();
     }
 
     /**
