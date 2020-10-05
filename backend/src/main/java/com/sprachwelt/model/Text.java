@@ -20,6 +20,6 @@ public class Text {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToMany(mappedBy = "text", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "text", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Word> words;
 }

@@ -19,21 +19,23 @@ public class GameService {
 
     /**
      * @param text
-     * @param wordPresenceProbabilityPercent
+     * @param level an integer number from 1 to 10.
      * @return
      */
-    public Game create(Text text, int wordPresenceProbabilityPercent) {
+    public Game create(Text text, int level) {
 
         List<Word> textWithGaps = new ArrayList<>();
         Set<Word> missingWords = new HashSet<>();
         Random random = new Random();
+
+        int wordPresenceProbability = (level + 3) * 10;
 
         int i = 0;
         for (Word word : text.getWords()) {
 
             // check if this is a word
             if (word.getContent().matches("^[a-zA-Z0-9\\-äöüÄÖÜß]*$")
-                    && random.nextInt(100) < wordPresenceProbabilityPercent) {
+                    && random.nextInt(100) < wordPresenceProbability) {
 
                 missingWords.add(word);
             } else {
@@ -43,7 +45,6 @@ public class GameService {
             ++i;
         }
 
-        return Game.builder().text(text).missingWords(missingWords).textWithGaps(textWithGaps).
-                status(GameStatus.NOT_STARTED).build();
+        return Game.builder().text(text).missingWords(missingWords).textWithGaps(textWithGaps).build();
     }
 }
