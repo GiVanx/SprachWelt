@@ -24,8 +24,8 @@ public class GameService {
      */
     public Game create(Text text, int level) {
 
-        List<Word> textWithGaps = new ArrayList<>();
-        Set<Word> missingWords = new HashSet<>();
+        LinkedHashSet<Word> textWithGaps = new LinkedHashSet<>();
+        LinkedHashSet<Word> missingWords = new LinkedHashSet<>();
         Random random = new Random();
 
         int wordPresenceProbability = (level + 3) * 10;

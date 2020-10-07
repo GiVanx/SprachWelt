@@ -56,6 +56,13 @@ public class GameFacade {
         return gameRepository.save(game);
     }
 
+    public Game save(Game game) {
+        Game toBeUpdated = getGame(game.getId());
+        toBeUpdated.setTextWithGaps(game.getTextWithGaps());
+        toBeUpdated.setMissingWords(game.getMissingWords());
+        return this.gameRepository.save(toBeUpdated);
+    }
+
     private Game getGame(Long id) {
         Game game = gameRepository.getOne(id);
         User activeUser = userFacade.getActiveUser();

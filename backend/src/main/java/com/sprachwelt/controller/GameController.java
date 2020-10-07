@@ -67,10 +67,16 @@ public class GameController {
         return modelMapper.map(gameFacade.remix(gameId, level), GameView.class);
     }
 
+    @PutMapping("{gameId}")
+    public GameView save(@RequestBody GameView gameView) {
+        Game game = modelMapper.map(gameView, Game.class);
+        game = gameFacade.save(game);
+        return modelMapper.map(game, GameView.class);
+    }
+
     @PostMapping("{id}/check")
     @ResponseBody
     public List<WordStatusView> checkWords(@PathVariable("id") String textId, @RequestBody List<Word> words) {
-        System.out.println("Words" + words);
         return textService.checkWords(textId, words);
     }
 }

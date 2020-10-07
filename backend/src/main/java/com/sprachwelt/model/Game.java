@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
@@ -26,8 +26,9 @@ public class Game {
     private Text text;
 
     @OneToMany(fetch = FetchType.EAGER)
-    private Set<Word> missingWords;
+    private Set<Word> missingWords = new LinkedHashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER)
-    private List<Word> textWithGaps;
+    @OrderBy(value = "position")
+    private Set<Word> textWithGaps = new LinkedHashSet<>();
 }
