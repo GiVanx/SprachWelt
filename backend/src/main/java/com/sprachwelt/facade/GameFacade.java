@@ -1,4 +1,4 @@
-package com.sprachwelt.repository;
+package com.sprachwelt.facade;
 
 import com.sprachwelt.auth.model.User;
 import com.sprachwelt.exception.GameLevelException;
@@ -7,11 +7,14 @@ import com.sprachwelt.exception.GameRemixException;
 import com.sprachwelt.model.Game;
 import com.sprachwelt.model.GameStatus;
 import com.sprachwelt.model.Text;
+import com.sprachwelt.repository.GameRepository;
 import com.sprachwelt.service.GameService;
-import com.sprachwelt.service.UserFacade;
 import com.sprachwelt.utils.Constants;
+import com.sprachwelt.view.WordView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class GameFacade {
@@ -24,6 +27,9 @@ public class GameFacade {
 
     @Autowired
     private GameService gameService;
+
+    @Autowired
+    private TextFacade textFacade;
 
     public Game create(Text text, int wordPresenceProbabilityPercent) {
         Game game = gameService.create(text, wordPresenceProbabilityPercent);
@@ -63,7 +69,12 @@ public class GameFacade {
         return this.gameRepository.save(toBeUpdated);
     }
 
-    private Game getGame(Long id) {
+    public List<WordView> check(long gameId, List<WordView> wordsToCheck) {
+        Game game = getGame(gameId);
+        return textFacade.checkWords(game.getText().getId(), wordsToCheck);
+    }
+
+    private Game getGame(long id) {
         Game game = gameRepository.getOne(id);
         User activeUser = userFacade.getActiveUser();
         if (game == null || activeUser.getGame().getId() != game.getId()) {

@@ -1,6 +1,7 @@
-package com.sprachwelt.repository;
+package com.sprachwelt.facade;
 
 import com.sprachwelt.model.Text;
+import com.sprachwelt.repository.TextRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,10 @@ public class TextRepositoryFacade {
     public Text save(Text text) {
         text.getWords().forEach(word -> word.setText(text));
         return this.textRepository.save(text);
+    }
+
+    public Text find(long textId) {
+        return textRepository.getOne(textId);
     }
 
     public Map<String, Set<Integer>> getWord2PositionMappings(Long textId) {

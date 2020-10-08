@@ -15,10 +15,10 @@ public class GameView {
 
     private Long id;
     private GameStatus status;
-    private List<WordView> missingWords;
+    private List<MissingWordView> missingWords;
     private List<WordView> textWithGaps;
 
-    public List<WordView> getMissingWords() {
+    public List<MissingWordView> getMissingWords() {
         Collections.shuffle(missingWords);
         return missingWords;
     }

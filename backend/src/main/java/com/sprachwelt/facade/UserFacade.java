@@ -1,4 +1,4 @@
-package com.sprachwelt.service;
+package com.sprachwelt.facade;
 
 import com.sprachwelt.auth.model.User;
 import com.sprachwelt.auth.repository.UserRepository;

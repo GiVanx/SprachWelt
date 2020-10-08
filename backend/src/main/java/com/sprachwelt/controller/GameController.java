@@ -3,15 +3,13 @@ package com.sprachwelt.controller;
 import com.sprachwelt.auth.model.User;
 import com.sprachwelt.model.Game;
 import com.sprachwelt.model.Text;
-import com.sprachwelt.model.Word;
-import com.sprachwelt.repository.GameFacade;
+import com.sprachwelt.facade.GameFacade;
 import com.sprachwelt.repository.GameRepository;
-import com.sprachwelt.repository.TextRepositoryFacade;
-import com.sprachwelt.service.TextService;
-import com.sprachwelt.service.UserFacade;
+import com.sprachwelt.facade.TextFacade;
+import com.sprachwelt.facade.UserFacade;
 import com.sprachwelt.utils.Constants;
 import com.sprachwelt.view.GameView;
-import com.sprachwelt.view.WordStatusView;
+import com.sprachwelt.view.WordView;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +21,11 @@ import java.util.List;
 public class GameController {
 
     @Autowired
-    private TextService textService;
-    @Autowired
     private GameFacade gameFacade;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private TextRepositoryFacade textRepositoryFacade;
+    private TextFacade textFacade;
     @Autowired
     private UserFacade userFacade;
     @Autowired
@@ -43,9 +39,9 @@ public class GameController {
     @PostMapping
     public GameView createGame(@RequestBody String textString) {
 
-        Text text = textService.tokenize(textString);
+        Text text = textFacade.tokenize(textString);
 
-        text = textRepositoryFacade.save(text);
+        text = textFacade.save(text);
 
         Game game = gameFacade.create(text, Constants.GAME_DEFAULT_LEVEL);
 
@@ -76,7 +72,7 @@ public class GameController {
 
     @PostMapping("{id}/check")
     @ResponseBody
-    public List<WordStatusView> checkWords(@PathVariable("id") String textId, @RequestBody List<Word> words) {
-        return textService.checkWords(textId, words);
+    public List<WordView> checkWords(@PathVariable("id") Long gameId, @RequestBody List<WordView> words) {
+        return gameFacade.check(gameId, words);
     }
 }
