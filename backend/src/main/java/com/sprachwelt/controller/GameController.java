@@ -33,7 +33,11 @@ public class GameController {
 
     @GetMapping("/active")
     public GameView getActiveGame() {
-        return modelMapper.map(this.userFacade.getActiveUser().getGame(), GameView.class);
+        Game activeGame = this.userFacade.getActiveUser().getGame();
+        if (activeGame != null) {
+            return modelMapper.map(activeGame, GameView.class);
+        }
+        return null;
     }
 
     @PostMapping
@@ -71,8 +75,13 @@ public class GameController {
     }
 
     @PostMapping("{id}/check")
-    @ResponseBody
     public List<WordView> checkWords(@PathVariable("id") Long gameId, @RequestBody List<WordView> words) {
         return gameFacade.check(gameId, words);
+    }
+
+    @PutMapping("{id}/cancel")
+    @ResponseBody
+    public void cancel(@PathVariable("id") Long gameId) {
+        gameFacade.cancel(gameId);
     }
 }

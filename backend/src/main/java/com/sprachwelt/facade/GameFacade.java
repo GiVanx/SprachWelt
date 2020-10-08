@@ -74,10 +74,15 @@ public class GameFacade {
         return textFacade.checkWords(game.getText().getId(), wordsToCheck);
     }
 
+    public void cancel(long gameId) {
+        Game game = getGame(gameId);
+        userFacade.removeGame(game);
+        gameRepository.delete(game);
+    }
+
     private Game getGame(long id) {
         Game game = gameRepository.getOne(id);
-        User activeUser = userFacade.getActiveUser();
-        if (game == null || activeUser.getGame().getId() != game.getId()) {
+        if (game == null || !userFacade.hasGame(game)) {
             throw new GameNotFoundException(id);
         }
         return game;
