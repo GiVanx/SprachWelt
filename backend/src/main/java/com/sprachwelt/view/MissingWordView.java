@@ -2,14 +2,16 @@ package com.sprachwelt.view;
 
 import com.sprachwelt.model.WordStatus;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class WordStatusView {
-
+@Data
+public class MissingWordView {
     private Long id;
-    private String text;
+    private String content;
     private WordStatus status;
-    private Integer position;
 }

@@ -1,0 +1,242 @@
+
+
+1. Get active(/in progress) User game.
+
+Request:
+
+GET /api/game/active
+
+Response:
+
+--> If exists:
+
+	{
+		id: number,
+		status: STARTED / NOT_STARTED,
+		missingWords: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus.IDLE;
+			}
+		],
+		textWithGaps: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
+			}
+		]
+	}
+
+--> If not:
+
+	null
+
+2. Start a new game
+
+Request:
+
+	POST /api/game
+
+		Text content
+
+Response:
+
+	{
+		id: number,
+		status: NOT_STARTED,
+		missingWords: [
+			{
+				id: number;
+				content: string;
+			}
+		],
+		textWithGaps: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus.ORIGINAL;
+				position: number;
+			}
+		]
+	}
+
+2. Start an existing game
+
+Request:
+
+PUT /api/game/{id}/start
+
+Response:
+
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
+
+	401 Not Found
+
+--> If game with {id} exists
+
+	{
+		id: number,
+		status: STARTED,
+		missingWords: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus.IDLE;
+			}
+		],
+		textWithGaps: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus.ORIGINAL;
+				position: number;
+			}
+		]
+	}
+
+3. Remix text
+
+Request:
+
+PUT /api/game/{id}/remix/{level}
+
+no body
+
+Response:
+
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
+
+	401 Not Found
+
+--> If game.exists && game.status = NOT_STARTED
+
+	{
+		id: number,
+		status: NOT_STARTED,
+		missingWords: [
+			{
+				id: number;
+				content: string;
+			}
+		],
+		textWithGaps: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus.ORIGINAL;
+				position: number;
+			}
+		]
+	}
+
+--> If game.exists && game.status = STARTED
+
+403 Bad Request: 
+
+	Game already started.
+	Text cannot be remixed at this point.
+
+4. Update game
+
+Request:
+
+	PUT /api/game/{id}
+
+	{
+		id: number,
+		missingWords: [
+			{
+				id: number;
+				content: string;
+			}
+		],
+		textWithGaps: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
+				position: number;
+			}
+		]
+	}
+
+Response:
+
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
+
+	401 Not Found
+
+--> If game with {id} exists
+
+	{
+		id: number,
+		missingWords: [
+			{
+				id: number;
+				content: string;
+			}
+		],
+		textWithGaps: [
+			{
+				id: number;
+				content: string;
+				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
+				position: number;
+			}
+		]
+	}
+
+5. Check
+
+Request:
+
+POST /api/game/{id}/check
+
+[
+	{
+		id: number;
+		content: string;
+		position: number;
+	}
+]
+
+Sending only the words that have to be evaluated (not the entire text with the original words).
+
+Response:
+
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
+
+401 Not Found
+
+--> If game with {id} exists
+	
+	--> If all the gaps were filled:
+
+		[
+			{
+				id: number;
+				content: string;
+				position: number;
+				status: WordStatus; // OK / WRONG
+			}
+		]
+
+	--> If not all the gaps were filled:
+	
+		403 Bad Request:
+			Text cannot be checked at this point. Not all the word gaps were filled.
+
+6. Cancel
+
+PUT /api/game/{id}/cancel
+
+--> If game with {id} doesn't exist (also check whether it exists for the logged in user)
+
+	401 Not Found
+
+--> If game with {id} exists
+
+	It will remove the game and the
+	text from the database.

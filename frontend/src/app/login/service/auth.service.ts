@@ -54,7 +54,9 @@ export class AuthService {
     let headers = new HttpHeaders();
     headers = headers.set(this.ID_TOKEN_HEADER_KEY, idToken);
 
-    return this.httpClient.post<Tokens>(loginEndpoint, null);
+    return this.httpClient.post<Tokens>(loginEndpoint, null, {
+      headers,
+    });
   }
 
   logout() {

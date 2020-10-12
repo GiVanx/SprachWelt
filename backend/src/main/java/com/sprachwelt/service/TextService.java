@@ -3,8 +3,8 @@ package com.sprachwelt.service;
 import com.sprachwelt.model.Text;
 import com.sprachwelt.model.Word;
 import com.sprachwelt.model.WordStatus;
-import com.sprachwelt.repository.TextRepository;
-import com.sprachwelt.view.WordStatusView;
+import com.sprachwelt.facade.TextRepositoryFacade;
+import com.sprachwelt.view.WordView;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,24 +12,20 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Service
 public class TextService {
 
     @Autowired
-    private TextRepository textRepository;
+    private TextRepositoryFacade textRepositoryFacade;
 
     @Autowired
     private ModelMapper modelMapper;
 
-
-    public Text save(String textString) {
-
-        List<Word> textWords = getTextWords(textString);
-        Text text = Text.builder().words(textWords).build();
-        text.getWords().forEach(word -> word.setText(text));
-        return textRepository.save(text);
+    public Text tokenize(String text) {
+        List<Word> textWords = getTextWords(text);
+        return Text.builder().words(textWords).build();
     }
 
     /**
@@ -37,41 +33,28 @@ public class TextService {
      * @param words
      * @returns
      */
-    public List<WordStatusView> checkWords(String textId, List<Word> words) {
+    public List<WordView> checkWords(Long textId, List<WordView> words) {
 
-        Text text = getTextWords(textId, words.stream().map(Word::getContent).collect(Collectors.toList()));
+        Map<String, Set<Integer>> mappings = textRepositoryFacade.getWord2PositionMappings(textId);
+        List<WordView> wordStatusList = new ArrayList<>();
 
-        Map<String, Map<Integer, Word>> wordMap = text.getWords()
-                .stream().collect(Collectors.groupingBy(Word::getContent,
-                        Collectors.mapping(word -> word, Collectors.toMap(Word::getPosition, word -> word))));
-
-        List<WordStatusView> statusList = new ArrayList<>();
-
-        System.out.println();
-
-        for (Word wordToCheck : words) {
+        for (WordView wordToCheck : words) {
 
             WordStatus status = WordStatus.NOT_FOUND;
-            if (wordMap.containsKey(wordToCheck.getContent())) {
+            if (mappings.containsKey(wordToCheck.getContent())) {
 
-                if (wordMap.get(wordToCheck.getContent()).containsKey(wordToCheck.getPosition())) {
+                if (mappings.get(wordToCheck.getContent()).contains(wordToCheck.getPosition())) {
                     status = WordStatus.OK;
                 } else {
                     status = WordStatus.WRONG;
                 }
             }
 
-            WordStatusView wordStatusView = modelMapper.map(wordToCheck, WordStatusView.class);
+            WordView wordStatusView = modelMapper.map(wordToCheck, WordView.class);
             wordStatusView.setStatus(status);
-            statusList.add(wordStatusView);
+            wordStatusList.add(wordStatusView);
         }
-        return statusList;
-    }
-
-    private Text getTextWords(String textId, List<String> words) {
-
-        //TODO: re-implement
-        return null;
+        return wordStatusList;
     }
 
     private List<Word> getTextWords(String text) {
