@@ -19,7 +19,8 @@ export class GoogleLoginProviderService implements LoginProvider {
     return pload.then(async () => {
       await gapi.auth2
         .init({
-          client_id: 'CLIENT_ID',
+          client_id:
+            '544207670281-10d4jci7e18aqaug9e7h18t80tp5r33d.apps.googleusercontent.com',
         })
         .then((auth) => {
           this.gapiSetup = true;

@@ -1,8 +1,10 @@
 package com.sprachwelt;
 
+import com.sprachwelt.facade.TextRepositoryFacade;
 import com.sprachwelt.repository.TextRepository;
-import com.sprachwelt.service.TextService;
+import com.sprachwelt.repository.WordRepository;
 import com.sprachwelt.service.GameService;
+import com.sprachwelt.service.TextService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -24,6 +26,12 @@ public class Application implements CommandLineRunner {
     @Autowired
     private GameService gameService;
 
+    @Autowired
+    private TextRepositoryFacade textRepositoryFacade;
+
+    @Autowired
+    private WordRepository wordRepository;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
@@ -37,9 +45,14 @@ public class Application implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
 //        textRepository.deleteAll();
-
-//        textService.add("You never know how things will turn out to be");
+//        Text text = textService.tokenize("A fost odata ca in povest, a fost ca niciodata. Odata, odata, poate.");
 //
-//        System.out.println(textRepository.findAll());
+//        text = textRepositoryFacade.save(text);
+//
+//        Map<String, Set<Integer>> map = textRepositoryFacade.getWord2PositionMappings(text.getId());
+//
+//        System.out.println("map " + map);
+
+//        textRepository.deleteAll();
     }
 }
