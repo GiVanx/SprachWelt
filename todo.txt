@@ -1,11 +1,8 @@
 
 
-1. FRONT/BACK-END: The TextWithGaps.textWithGaps should be a List<Word> not a List<String>
-   Add 'status' field to the Word class and the set the status accordingly.
-   Remove from frontend the logic for setting the status.
-   
-2. FRONTEND: Add a switch between mock data.
+FRONTEND:
 
-3. Read about CORS and understand Backend.AppConf class.
-
-4. BACKEND: Remove TextWithGapsService.getWordGroups().
+1. Add an error service and error component that would show an error popup whenever a new error comes in. Document yourself if this is the right way.
+2. Add logo in the header.
+3. Fix Copyright.
+4. Beautify login page.

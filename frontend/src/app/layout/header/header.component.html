@@ -1,7 +1,13 @@
 <mat-toolbar>
-  <span fxFlex="1"></span>
-  <p *ngIf="user$ | async">{{ (user$ | async).name }}</p>
-  <button mat-raised-button *ngIf="!(user$ | async)" color="primary">
-    Remix
+  <p>Logo</p>
+  <span fxFlex="1 1 auto"></span>
+  <p *ngIf="user$ | async">Welcome, {{ (user$ | async).name }}!</p>
+  <button
+    mat-raised-button
+    *ngIf="!(user$ | async)"
+    color="primary"
+    (click)="login()"
+  >
+    Login
   </button>
 </mat-toolbar>
