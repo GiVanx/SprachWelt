@@ -1,6 +1,7 @@
 <mat-toolbar>
-  <a>How to play?</a>
-  <ng-container *ngIf="user$ | async">
-    <p>{{ (user$ | async).name }}</p>
-  </ng-container>
+  <span fxFlex="1"></span>
+  <p *ngIf="user$ | async">{{ (user$ | async).name }}</p>
+  <button mat-raised-button *ngIf="!(user$ | async)" color="primary">
+    Remix
+  </button>
 </mat-toolbar>
