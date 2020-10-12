@@ -3,7 +3,6 @@ package com.sprachwelt;
 import com.sprachwelt.facade.TextRepositoryFacade;
 import com.sprachwelt.repository.TextRepository;
 import com.sprachwelt.repository.WordRepository;
-import com.sprachwelt.service.GameService;
 import com.sprachwelt.service.TextService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,6 @@ public class Application implements CommandLineRunner {
 
     @Autowired
     private TextService textService;
-
-    @Autowired
-    private GameService gameService;
 
     @Autowired
     private TextRepositoryFacade textRepositoryFacade;
