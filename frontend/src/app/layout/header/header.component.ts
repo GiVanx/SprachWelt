@@ -22,6 +22,10 @@ export class HeaderComponent implements OnInit {
     this.user$ = this.authService.user$();
   }
 
+  logout() {
+    this.authService.logout();
+  }
+
   login(): void {
     this.router.navigate(['login'], {
       queryParams: { returnUrl: this.router.url },
