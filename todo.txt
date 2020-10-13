@@ -6,3 +6,9 @@ FRONTEND:
 2. Add logo in the header.
 3. Fix Copyright.
 4. Beautify login page.
+5. If user clicks on logout while game is running, save the game first.
+
+
+IDEAS:
+On text input page show a list of last 10 texts???
+Save text on text input component onDestory and window unload???
