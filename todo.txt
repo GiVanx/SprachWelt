@@ -12,3 +12,7 @@ FRONTEND:
 IDEAS:
 On text input page show a list of last 10 texts???
 Save text on text input component onDestory and window unload???
+
+Once the Start button was clicked OR game already started => unsubscribe from showing 
+the loading spinner, such that the autosave functionality doesn't show the spinner each 
+time the game is auto-saved.

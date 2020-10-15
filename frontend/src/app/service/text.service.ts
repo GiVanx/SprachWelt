@@ -1,26 +1,52 @@
 import { Injectable } from '@angular/core';
-import { TextWithGaps } from '../model/text-with-gaps';
+import { LeakyTextGame } from '../model/text-with-gaps';
 import { Observable, of } from 'rxjs';
-import { textWithGapsMock } from '../mock-data/text-with-gaps.data';
+import { leakyGameMock } from '../mock-data/text-with-gaps.data';
 import { Word } from '../model/word';
 import { checkedWordsMock } from '../mock-data/checked-words.data';
 import { debounceTime } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { GameStatus } from '../model/game-status';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TextService {
+export class GameService {
+  game = null;
+
   constructor(private http: HttpClient) {}
 
-  addText(text: string): Observable<TextWithGaps> {
-    console.log('ADD TEXT', text);
-    // return this.http.post<TextWithGaps>(environment.textEndpoint(), text);
-    return of(textWithGapsMock);
+  getActiveGame(): Observable<LeakyTextGame> {
+    return of(this.game);
   }
 
-  checkWords(textId: string, words: Word[]): Observable<Word[]> {
+  startGame(id: number) {
+    return of({ ...this.game, status: GameStatus.STARTED });
+  }
+
+  remix(id: number, level: number) {
+    return of(this.game);
+  }
+
+  save(game: LeakyTextGame): Observable<LeakyTextGame> {
+    this.game = game;
+    return of(this.game);
+  }
+
+  create(text: string): Observable<LeakyTextGame> {
+    console.log('ADD TEXT', text);
+    this.game = leakyGameMock;
+    // return this.http.post<TextWithGaps>(environment.textEndpoint(), text);
+    return of(this.game);
+  }
+
+  cancel(id: number): Observable<any> {
+    this.game = null;
+    return of(null);
+  }
+
+  checkWords(gameId: number, words: Word[]): Observable<Word[]> {
     // return this.http.post<Word[]>(environment.textCheckEndpoint(textId), words);
     return of(checkedWordsMock).pipe(debounceTime(2000));
   }

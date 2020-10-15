@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UiStore } from '../state/ui.store';
 import { combineLatest } from 'rxjs';
 import { filter, distinctUntilChanged } from 'rxjs/operators';
-import { TextStore } from '../state/text.store';
+import { GameFacade } from '../state/game.facade';
 
 @Component({
   selector: 'app-text-fill-game',
@@ -10,13 +10,13 @@ import { TextStore } from '../state/text.store';
   styleUrls: ['./text-fill-game.component.less'],
 })
 export class TextFillGameComponent implements OnInit {
-  constructor(private uiStore: UiStore, private textStore: TextStore) {}
+  constructor(private uiStore: UiStore, private textStore: GameFacade) {}
 
   ngOnInit(): void {
     console.log('text fill component');
 
     // TODO: remove this line. It is now used only for testing with mock data.
-    this.textStore.addTextRequest('');
+    this.textStore.createGameRequest('');
 
     this.uiStore
       .getSelection()

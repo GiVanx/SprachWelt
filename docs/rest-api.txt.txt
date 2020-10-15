@@ -25,6 +25,7 @@ Response:
 				id: number;
 				content: string;
 				status: WordStatus; // ORIGINAL / TO_BE_EVALUATED / WRONG / OK
+				position: number;
 			}
 		]
 	}
@@ -50,6 +51,7 @@ Response:
 			{
 				id: number;
 				content: string;
+				status: WordStatus.IDLE;
 			}
 		],
 		textWithGaps: [
@@ -240,3 +242,4 @@ PUT /api/game/{id}/cancel
 
 	It will remove the game and the
 	text from the database.
+

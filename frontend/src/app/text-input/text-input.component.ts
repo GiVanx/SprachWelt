@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TextStore } from '../state/text.store';
+import { GameFacade } from '../state/game.facade';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 export class TextInputComponent implements OnInit {
   text: string;
 
-  constructor(private textStore: TextStore, private router: Router) {}
+  constructor(private textStore: GameFacade, private router: Router) {}
 
   ngOnInit(): void {
     console.log('text input component');
@@ -20,7 +20,7 @@ export class TextInputComponent implements OnInit {
     console.log('ON PLAY', this.text);
     // TODO: change this length logic
     if (this.text.length > 0) {
-      this.textStore.addTextRequest(this.text);
+      this.textStore.createGameRequest(this.text);
       this.router.navigate(['/text-fill']);
     }
   }

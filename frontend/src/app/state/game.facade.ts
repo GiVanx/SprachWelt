@@ -1,23 +1,34 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { TextState, initialWordState } from './text.state';
+import { BehaviorSubject, Observable, pipe } from 'rxjs';
+import { GameState, initialWordState } from './game.state';
 import { map } from 'rxjs/operators';
-import { TextService } from '../service/text.service';
+import { GameService } from '../service/text.service';
 import { WordStatus } from '../model/word-status';
 import { Word } from '../model/word';
 import { WordUtils } from '../model/word-utils';
-import * as uuid from 'uuid';
-import { textWithGapsMock } from '../mock-data/text-with-gaps.data';
+import { LeakyTextGame } from '../model/text-with-gaps';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TextStore {
-  private _wordState: BehaviorSubject<TextState> = new BehaviorSubject(
+export class GameFacade {
+  private _wordState: BehaviorSubject<GameState> = new BehaviorSubject(
     initialWordState
   );
 
-  constructor(private wordService: TextService, private wordUtils: WordUtils) {}
+  constructor(private wordService: GameService, private wordUtils: WordUtils) {}
+
+  selectTextReadyToCheck(): Observable<boolean> {
+    return this._wordState
+      .asObservable()
+      .pipe(
+        map(
+          (state) =>
+            state.wordsToBeEvaluated.length ===
+            state.totalCountWordsToBeEvaluated
+        )
+      );
+  }
 
   selectAllMissingWords() {
     return this._wordState
@@ -51,7 +62,7 @@ export class TextStore {
 
     const newTextGap = {
       ...word,
-      id: uuid.v4(),
+      id: Date.now(),
       status: WordStatus.MISSING,
     };
     console.log(
@@ -84,29 +95,33 @@ export class TextStore {
     this._wordState.next(state);
   }
 
-  addTextRequest(text: string) {
-    this.wordService.addText(text).subscribe((response) => {
+  createGameRequest(text: string) {
+    this.wordService.create(text).subscribe((response) => {
       console.log('server response', response);
-      let state = this._wordState.getValue();
-
-      const textWithGaps = this.processWords(
-        response.textWithGaps,
-        WordStatus.ORIGINAL
-      );
-      console.log('text with gaps', textWithGaps);
-      state.textWithGaps.addAll(textWithGaps);
-
-      const missingWords = this.processWords(
-        response.missingWords,
-        WordStatus.IDLE
-      );
-
-      state.wordsToBeEvaluated.push(...missingWords.map((word) => word.id));
-      state.missingWords.addAll(missingWords);
-      state.activeTextId = response.textId;
-
-      this._wordState.next(state);
+      this.updateState(response);
     });
+  }
+
+  getActiveGameRequest() {
+    this.wordService.getActiveGame().subscribe((response) => {
+      this.updateState(response);
+    });
+  }
+
+  startGameRequest() {
+    this.wordService
+      .startGame(this._wordState.value.gameId)
+      .subscribe((response) => {
+        this.updateState(response);
+      });
+  }
+
+  cancelGameRequest() {
+    this.wordService
+      .cancel(this._wordState.value.gameId)
+      .subscribe((response) => {
+        // TODO: clear state
+      });
   }
 
   checkWords() {
@@ -122,7 +137,7 @@ export class TextStore {
     console.log('WORDS TO CHECK', wordsToCheck);
 
     this.wordService
-      .checkWords(state.activeTextId, wordsToCheck)
+      .checkWords(state.gameId, wordsToCheck)
       .subscribe((evaluatedWords: Word[]) => {
         console.log('CHECKED WORDS', evaluatedWords);
         const state = this._wordState.getValue();
@@ -136,14 +151,34 @@ export class TextStore {
       });
   }
 
-  processWords(words: Word[], status: WordStatus) {
-    words = [...words];
-    console.log(words);
-    return words.map((word, position) => {
-      if (!word) {
-        return new Word(uuid.v4(), null, position, WordStatus.MISSING);
+  private getTextWithGaps(words: Word[]): Word[] {
+    const result: Word[] = [];
+    let i = 0;
+    let j = i + 1;
+    if (i < words.length && j < words.length) {
+      result.push(words[i]);
+      let position = words[i].position + 1;
+      while (position < words[j].position) {
+        result.push(new Word(Date.now(), null, position, WordStatus.MISSING));
+        ++position;
       }
-      return { ...word, position, status };
-    });
+      ++i;
+      ++j;
+    }
+    return result;
+  }
+
+  private updateState(game: LeakyTextGame) {
+    let state = this._wordState.getValue();
+
+    const textWithGaps = this.getTextWithGaps(game.textWithGaps);
+    console.log('text with gaps', textWithGaps);
+    state.textWithGaps.addAll(textWithGaps);
+
+    state.totalCountWordsToBeEvaluated = game.missingWords.length;
+    state.missingWords.addAll(game.missingWords);
+    state.gameId = game.id;
+
+    this._wordState.next(state);
   }
 }

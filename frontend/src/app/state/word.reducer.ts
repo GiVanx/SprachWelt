@@ -1,8 +1,8 @@
 import { Word } from '../model/word';
 
 export class MissingWordState {
-  readonly ids: string[];
-  readonly words: Map<string, Word>;
+  readonly ids: number[];
+  readonly words: Map<number, Word>;
 }
 
 export const initialState = {
@@ -39,7 +39,7 @@ export class WordStateReducer {
     }
   }
 
-  replace(oldWordId: string, newWord: Word) {
+  replace(oldWordId: number, newWord: Word) {
     if (this.state.words.has(oldWordId)) {
       const newState = { ...this.state };
 

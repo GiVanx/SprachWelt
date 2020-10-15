@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TextStore } from '../../state/text.store';
+import { GameFacade } from '../../state/game.facade';
 import { Difficulty } from 'src/app/model/difficulty';
 
 @Component({
@@ -8,7 +8,7 @@ import { Difficulty } from 'src/app/model/difficulty';
   styleUrls: ['./text-fill-game-header.component.less'],
 })
 export class TextFillGameHeaderComponent implements OnInit {
-  constructor(private store: TextStore) {}
+  constructor(private store: GameFacade) {}
 
   ngOnInit(): void {}
 
