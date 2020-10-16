@@ -5,6 +5,7 @@ import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuardService } from './login/guard/auth-guard.service';
 import { HomeComponent } from './home/home.component';
+import { ActiveGameResolverService } from './active-game-resolver.service';
 
 // TODO: add page not found route
 const routes: Routes = [
@@ -15,6 +16,9 @@ const routes: Routes = [
       {
         path: '',
         component: HomeComponent,
+        resolve: {
+          activeGame: ActiveGameResolverService,
+        },
       },
     ],
   },
@@ -29,6 +33,9 @@ const routes: Routes = [
       {
         path: '',
         component: TextInputComponent,
+        resolve: {
+          activeGame: ActiveGameResolverService,
+        },
       },
     ],
     canActivate: [AuthGuardService],
