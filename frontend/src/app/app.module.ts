@@ -3,6 +3,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -18,6 +19,7 @@ import { TextEditComponent } from './text-edit/text-edit.component';
 import { TextFillGameModule } from './text-fill-game/text-fill-game.module';
 import { TextInputHeaderComponent } from './text-input-header/text-input-header.component';
 import { TextInputComponent } from './text-input/text-input.component';
+import { NewGameDialogComponent } from './new-game-dialog/new-game-dialog.component';
 
 export function appInitializer(authService: AuthService) {
   return () =>
@@ -33,10 +35,12 @@ export function appInitializer(authService: AuthService) {
     TextInputComponent,
     TextInputHeaderComponent,
     HomeComponent,
+    NewGameDialogComponent,
   ],
   imports: [
     FormsModule,
     MatButtonModule,
+    MatDialogModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

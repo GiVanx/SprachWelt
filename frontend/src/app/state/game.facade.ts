@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, pipe } from 'rxjs';
 import { GameState, initialWordState } from './game.state';
-import { map } from 'rxjs/operators';
+import { delay, map, tap } from 'rxjs/operators';
 import { GameService } from '../service/text.service';
 import { WordStatus } from '../model/word-status';
 import { Word } from '../model/word';
@@ -12,14 +12,25 @@ import { LeakyTextGame } from '../model/text-with-gaps';
   providedIn: 'root',
 })
 export class GameFacade {
-  private _wordState: BehaviorSubject<GameState> = new BehaviorSubject(
+  private gameState: BehaviorSubject<GameState> = new BehaviorSubject(
     initialWordState
+  );
+  private requestInProgress: BehaviorSubject<Boolean> = new BehaviorSubject(
+    false
   );
 
   constructor(private wordService: GameService, private wordUtils: WordUtils) {}
 
+  selectActiveGameId() {
+    return this.gameState.asObservable().pipe(map((game) => game.gameId));
+  }
+
+  selectRequestInProgress() {
+    return this.requestInProgress.asObservable();
+  }
+
   selectTextReadyToCheck(): Observable<boolean> {
-    return this._wordState
+    return this.gameState
       .asObservable()
       .pipe(
         map(
@@ -31,19 +42,19 @@ export class GameFacade {
   }
 
   selectAllMissingWords() {
-    return this._wordState
+    return this.gameState
       .asObservable()
       .pipe(map((state) => state.missingWords.selectAll()));
   }
 
   selectAllTextWithGaps() {
-    return this._wordState
+    return this.gameState
       .asObservable()
       .pipe(map((state) => state.textWithGaps.selectAll()));
   }
 
-  moveWordFromMissingToTextGap(textGapId: string, missingWordId: string) {
-    let state = this._wordState.getValue();
+  moveWordFromMissingToTextGap(textGapId: number, missingWordId: number) {
+    let state = this.gameState.getValue();
 
     let textGap = state.textWithGaps.selectById(textGapId);
     const missingWord = state.missingWords.selectById(missingWordId);
@@ -56,7 +67,7 @@ export class GameFacade {
   }
 
   moveWordFromTextGapToMissingWords(word: Word) {
-    let state = this._wordState.getValue();
+    let state = this.gameState.getValue();
 
     console.log('moveWordFromTextGapToMissingWords', 'word', word);
 
@@ -77,12 +88,12 @@ export class GameFacade {
       status: WordStatus.IDLE,
     });
 
-    this._wordState.next(state);
+    this.gameState.next(state);
     return newTextGap;
   }
 
   _moveWordFromMissingToTextGap(textGap: Word, missingWord: Word) {
-    let state = this._wordState.getValue();
+    let state = this.gameState.getValue();
 
     state.textWithGaps.replace(textGap.id, {
       ...missingWord,
@@ -92,7 +103,7 @@ export class GameFacade {
 
     state.missingWords.delete(missingWord);
 
-    this._wordState.next(state);
+    this.gameState.next(state);
   }
 
   createGameRequest(text: string) {
@@ -103,14 +114,19 @@ export class GameFacade {
   }
 
   getActiveGameRequest() {
-    this.wordService.getActiveGame().subscribe((response) => {
-      this.updateState(response);
-    });
+    this.requestInProgress.next(true);
+    return this.wordService.getActiveGame().pipe(
+      tap((response) => {
+        this.updateState(response);
+        this.requestInProgress.next(false);
+      }),
+      delay(500)
+    );
   }
 
   startGameRequest() {
     this.wordService
-      .startGame(this._wordState.value.gameId)
+      .startGame(this.gameState.value.gameId)
       .subscribe((response) => {
         this.updateState(response);
       });
@@ -118,14 +134,14 @@ export class GameFacade {
 
   cancelGameRequest() {
     this.wordService
-      .cancel(this._wordState.value.gameId)
+      .cancel(this.gameState.value.gameId)
       .subscribe((response) => {
         // TODO: clear state
       });
   }
 
   checkWords() {
-    const state = this._wordState.getValue();
+    const state = this.gameState.getValue();
     const toBeEvaluated = state.wordsToBeEvaluated;
 
     const textGapWordEntities = state.textWithGaps.selectEntities();
@@ -140,14 +156,14 @@ export class GameFacade {
       .checkWords(state.gameId, wordsToCheck)
       .subscribe((evaluatedWords: Word[]) => {
         console.log('CHECKED WORDS', evaluatedWords);
-        const state = this._wordState.getValue();
+        const state = this.gameState.getValue();
 
         for (let word of evaluatedWords) {
           state.textWithGaps.replace(word.id, word);
         }
 
         console.log('final', state);
-        this._wordState.next(state);
+        this.gameState.next(state);
       });
   }
 
@@ -169,16 +185,18 @@ export class GameFacade {
   }
 
   private updateState(game: LeakyTextGame) {
-    let state = this._wordState.getValue();
+    if (game) {
+      let state = this.gameState.getValue();
 
-    const textWithGaps = this.getTextWithGaps(game.textWithGaps);
-    console.log('text with gaps', textWithGaps);
-    state.textWithGaps.addAll(textWithGaps);
+      const textWithGaps = this.getTextWithGaps(game.textWithGaps);
+      console.log('text with gaps', textWithGaps);
+      state.textWithGaps.addAll(textWithGaps);
 
-    state.totalCountWordsToBeEvaluated = game.missingWords.length;
-    state.missingWords.addAll(game.missingWords);
-    state.gameId = game.id;
+      state.totalCountWordsToBeEvaluated = game.missingWords.length;
+      state.missingWords.addAll(game.missingWords);
+      state.gameId = game.id;
 
-    this._wordState.next(state);
+      this.gameState.next(state);
+    }
   }
 }

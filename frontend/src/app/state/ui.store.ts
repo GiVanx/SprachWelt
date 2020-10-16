@@ -41,13 +41,13 @@ export class UiStore {
     this._uiState.next(state);
   }
 
-  setSelectedMissingWordId(id: string) {
+  setSelectedMissingWordId(id: number) {
     let state = this._uiState.getValue();
     state = { ...state, selectedMissingWordId: id };
     this._uiState.next(state);
   }
 
-  setSelectedTextGapId(id: string) {
+  setSelectedTextGapId(id: number) {
     let state = this._uiState.getValue();
     state = { ...state, selectedTextGapId: id };
     this._uiState.next(state);
