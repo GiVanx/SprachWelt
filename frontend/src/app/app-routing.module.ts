@@ -10,7 +10,7 @@ import { ActiveGameResolverService } from './active-game-resolver.service';
 // TODO: add page not found route
 const routes: Routes = [
   {
-    path: '',
+    path: 'home',
     component: AppLayoutComponent,
     children: [
       {
@@ -29,13 +29,13 @@ const routes: Routes = [
   {
     path: 'text',
     component: AppLayoutComponent,
+    resolve: {
+      activeGame: ActiveGameResolverService,
+    },
     children: [
       {
         path: '',
         component: TextInputComponent,
-        resolve: {
-          activeGame: ActiveGameResolverService,
-        },
       },
     ],
     canActivate: [AuthGuardService],
@@ -47,6 +47,9 @@ const routes: Routes = [
         (m) => m.TextFillGameModule
       ),
     canActivate: [AuthGuardService],
+    resolve: {
+      activeGame: ActiveGameResolverService,
+    },
   },
   {
     path: '**',

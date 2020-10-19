@@ -6,7 +6,6 @@ import { Word } from '../model/word';
 import { checkedWordsMock } from '../mock-data/checked-words.data';
 import { debounceTime } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { environment } from 'src/environments/environment';
 import { GameStatus } from '../model/game-status';
 
 @Injectable({

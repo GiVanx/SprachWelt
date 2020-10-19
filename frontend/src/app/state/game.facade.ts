@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, pipe } from 'rxjs';
 import { GameState, initialWordState } from './game.state';
 import { delay, map, tap } from 'rxjs/operators';
-import { GameService } from '../service/text.service';
+import { GameService } from '../service/game.service';
 import { WordStatus } from '../model/word-status';
 import { Word } from '../model/word';
 import { WordUtils } from '../model/word-utils';
