@@ -1,11 +1,18 @@
-<app-text-input-header (onPlay)="onPlay()"></app-text-input-header>
+<div
+  fxLayout="column"
+  style="width: 100%; height: 100%"
+  fxLayoutAlign="center center"
+>
+  <div fxLayout="column" style="width: 80%; height: 100%">
+    <app-text-input-header (onPlay)="onPlay()"></app-text-input-header>
 
-<div class="row align-center">
-  <mat-form-field appearance="outline">
-    <textarea
-      matInput
-      [(ngModel)]="text"
-      placeholder="Add text here..."
-    ></textarea>
-  </mat-form-field>
+    <mat-form-field fxLayout="column" fxFlex="1 1 auto" appearance="outline">
+      <textarea
+        class="textInputArea"
+        matInput
+        [(ngModel)]="text"
+        placeholder="Add text here..."
+      ></textarea>
+    </mat-form-field>
+  </div>
 </div>

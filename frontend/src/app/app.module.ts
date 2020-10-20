@@ -20,6 +20,7 @@ import { TextFillGameModule } from './text-fill-game/text-fill-game.module';
 import { TextInputHeaderComponent } from './text-input-header/text-input-header.component';
 import { TextInputComponent } from './text-input/text-input.component';
 import { NewGameDialogComponent } from './new-game-dialog/new-game-dialog.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 export function appInitializer(authService: AuthService) {
   return () =>
@@ -50,6 +51,7 @@ export function appInitializer(authService: AuthService) {
     TextFillGameModule,
     LayoutModule,
     LoginModule,
+    FlexLayoutModule,
   ],
   providers: [
     {
