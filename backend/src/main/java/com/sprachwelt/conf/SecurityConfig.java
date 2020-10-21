@@ -28,7 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         System.out.println("Security configuration!!!");
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/login/**").permitAll()
+                .antMatchers("/login/google").permitAll()
                 .and().authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
