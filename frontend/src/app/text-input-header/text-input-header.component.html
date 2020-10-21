@@ -1,5 +1,10 @@
 <div fxLayout="row" fxLayoutAlign="flex-end">
-  <button mat-raised-button color="primary" (click)="onPlayButtonClick()">
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="playButtonDisabled"
+    (click)="onPlayButtonClick()"
+  >
     Play
   </button>
 </div>

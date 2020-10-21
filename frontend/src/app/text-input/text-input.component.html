@@ -4,15 +4,24 @@
   fxLayoutAlign="center center"
 >
   <div fxLayout="column" style="width: 80%; height: 100%">
-    <app-text-input-header (onPlay)="onPlay()"></app-text-input-header>
+    <app-text-input-header
+      (onPlay)="onPlay()"
+      [playButtonDisabled]="!f.valid"
+    ></app-text-input-header>
 
-    <mat-form-field fxLayout="column" fxFlex="1 1 auto" appearance="outline">
-      <textarea
-        class="textInputArea"
-        matInput
-        [(ngModel)]="text"
-        placeholder="Add text here..."
-      ></textarea>
-    </mat-form-field>
+    <form #f="ngForm" fxFlex="1 1 auto">
+      <mat-form-field fxLayout="column" fxFlex="1 1 auto" appearance="outline">
+        <textarea
+          (blur)="onBlur()"
+          name="text"
+          ngModel
+          class="textInputArea"
+          matInput
+          [(ngModel)]="text"
+          placeholder="Add text here..."
+          required
+        ></textarea>
+      </mat-form-field>
+    </form>
   </div>
 </div>

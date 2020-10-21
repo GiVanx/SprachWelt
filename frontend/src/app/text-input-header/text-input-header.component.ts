@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 
 @Component({
   selector: 'app-text-input-header',
@@ -7,6 +7,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class TextInputHeaderComponent implements OnInit {
   @Output() onPlay: EventEmitter<any> = new EventEmitter();
+  @Input() playButtonDisabled: boolean;
 
   constructor() {}
 

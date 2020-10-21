@@ -6,6 +6,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class NotificationService {
   private SUCCESS_SNACKBAR_DURATION = 5000;
+  private lastMessageId;
 
   constructor(private snackBar: MatSnackBar) {}
 
@@ -15,7 +16,15 @@ export class NotificationService {
     });
   }
 
-  showError(message: string): void {
+  showError(message: string): string {
     this.snackBar.open(message, 'X', { panelClass: ['error'] });
+    this.lastMessageId = Date.now().toString();
+    return this.lastMessageId;
+  }
+
+  dismissError(messageId: string) {
+    if (messageId === this.lastMessageId) {
+      this.snackBar.dismiss();
+    }
   }
 }
