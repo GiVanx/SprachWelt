@@ -1,22 +1,11 @@
 :host {
   margin-bottom: 5px;
-}
 
-.control-button-group button {
-  margin: 0 1px 0 1px;
-}
-
-.mat-button-toggle-checked.easy {
-  background-color: rgb(36, 167, 36);
-  color: black;
-}
-
-.mat-button-toggle-checked.medium {
-  background-color: rgb(240, 237, 72);
-  color: black;
-}
-
-.mat-button-toggle-checked.hard {
-  background-color: rgb(233, 77, 77);
-  color: black;
+  ::ng-deep
+    .mat-button-toggle-group
+    .mat-button-toggle
+    .mat-button-toggle-button
+    .mat-button-toggle-label-content {
+    line-height: 0;
+  }
 }

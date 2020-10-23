@@ -1,31 +1,20 @@
-<div fxLayout="row" fxLayoutAlign="space-between start">
-  <mat-button-toggle-group
-    name="difficultyLevel"
-    (change)="onDifficultyChange($event)"
-  >
-    <mat-button-toggle
-      class="easy"
-      value="{{ difficultyEnum().EASY }}"
-      [checked]="true"
-      >Easy</mat-button-toggle
+<div fxLayout="row" fxLayoutAlign="center">
+  <div>
+    <mat-button-toggle-group
+      name="difficultyLevel"
+      (change)="onDifficultyChange($event)"
     >
-    <mat-button-toggle value="{{ difficultyEnum().MEDIUM }}" class="medium"
-      >Medium</mat-button-toggle
-    >
-    <mat-button-toggle value="{{ difficultyEnum().HARD }}" class="hard"
-      >Hard</mat-button-toggle
-    >
-  </mat-button-toggle-group>
+      <mat-button-toggle *ngFor="let level of levels" [checked]="level === 2">{{
+        level
+      }}</mat-button-toggle>
+    </mat-button-toggle-group>
+    <button mat-raised-button color="primary">Remix</button>
+  </div>
 
-  <div class="control-button-group">
-    <button mat-raised-button color="primary">
-      Remix
-    </button>
+  <div style="margin-left: auto">
     <button mat-raised-button color="primary" (click)="onCheckButtonClicked()">
       Check
     </button>
-    <button mat-raised-button color="primary">
-      Start
-    </button>
+    <button mat-raised-button color="primary">Start</button>
   </div>
 </div>
