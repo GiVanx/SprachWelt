@@ -7,6 +7,7 @@ import { WordStatus } from '../model/word-status';
 import { Word } from '../model/word';
 import { WordUtils } from '../model/word-utils';
 import { LeakyTextGame } from '../model/text-with-gaps';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
   providedIn: 'root',
@@ -73,7 +74,7 @@ export class GameFacade {
 
     const newTextGap = {
       ...word,
-      id: Date.now(),
+      id: uuidv4(),
       status: WordStatus.MISSING,
     };
     console.log(
@@ -175,7 +176,7 @@ export class GameFacade {
       result.push(words[i]);
       let position = words[i].position + 1;
       while (position < words[j].position) {
-        result.push(new Word(Date.now(), null, position, WordStatus.MISSING));
+        result.push(new Word(uuidv4(), null, position, WordStatus.MISSING));
         ++position;
       }
       ++i;
