@@ -1,4 +1,4 @@
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, OnDestroy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -6,7 +6,7 @@ import { Md5 } from 'ts-md5/dist/md5';
 @Injectable({
   providedIn: 'root',
 })
-export class NotificationService {
+export class NotificationService implements OnDestroy {
   private SUCCESS_SNACKBAR_DURATION = 3000;
   private lastMessageId;
   private messageIsStillVisible = false;
@@ -14,6 +14,10 @@ export class NotificationService {
   private openedSubscription: Subscription;
 
   constructor(private snackBar: MatSnackBar) {}
+
+  ngOnDestroy(): void {
+    this.clearSnackbarSubscriptions();
+  }
 
   showSuccess(message: string): void {
     return this.showMessage(message, this.showSuccessMessage.bind(this));
@@ -53,8 +57,11 @@ export class NotificationService {
   }
 
   clearSnackbarSubscriptions() {
-    if (this.dismissedSubscription || this.openedSubscription) {
+    if (this.dismissedSubscription) {
       this.dismissedSubscription.unsubscribe();
+    }
+
+    if (this.openedSubscription) {
       this.openedSubscription.unsubscribe();
     }
   }
