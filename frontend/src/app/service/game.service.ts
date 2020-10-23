@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LeakyTextGame } from '../model/text-with-gaps';
 import { Observable, of } from 'rxjs';
-import { leakyGameMock } from '../mock-data/text-with-gaps.data';
+import { leakyGameMock } from '../mock-data/leaky-text-game.data';
 import { Word } from '../model/word';
 import { checkedWordsMock } from '../mock-data/checked-words.data';
 import { debounceTime } from 'rxjs/operators';

@@ -171,7 +171,7 @@ export class GameFacade {
     const result: Word[] = [];
     let i = 0;
     let j = i + 1;
-    if (i < words.length && j < words.length) {
+    while (i < words.length && j < words.length) {
       result.push(words[i]);
       let position = words[i].position + 1;
       while (position < words[j].position) {
@@ -187,6 +187,8 @@ export class GameFacade {
   private updateState(game: LeakyTextGame) {
     if (game) {
       let state = this.gameState.getValue();
+
+      console.log('updateState: ', game.textWithGaps);
 
       const textWithGaps = this.getTextWithGaps(game.textWithGaps);
       console.log('text with gaps', textWithGaps);

@@ -22,7 +22,9 @@
     [class.correct]="word.status === getWordStatusEnum().OK"
   >
     {{
-      word.status !== getWordStatusEnum().MISSING ? word.text : WORD_PLACEHOLDER
+      word.status !== getWordStatusEnum().MISSING
+        ? word.content
+        : WORD_PLACEHOLDER
     }}
   </mat-list-option>
 </mat-selection-list>
