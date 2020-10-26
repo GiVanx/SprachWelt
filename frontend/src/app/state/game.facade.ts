@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { LeakyTextGame } from '../model/text-with-gaps';
@@ -125,7 +125,6 @@ export class GameFacade {
   }
 
   startGameRequest() {
-    console.log('startGameRequest');
     this.requestInProgress.next(true);
     if (!this.startGame$) {
       // TODO: check if this works when a new game is created
@@ -144,6 +143,7 @@ export class GameFacade {
     }
 
     this.startGame$.subscribe();
+    return this.startGame$;
   }
 
   remixGameRequest(level) {
@@ -152,15 +152,16 @@ export class GameFacade {
       this.remixGame$ = this.gameService
         .remix(this.gameState.value.gameId, level)
         .pipe(
-          shareReplay(),
           tap((response) => {
             console.log('got a response');
             this.updateState(response);
             this.requestInProgress.next(false);
-          })
+          }),
+          shareReplay()
         );
     }
     this.remixGame$.subscribe();
+    return this.remixGame$;
   }
 
   cancelGameRequest() {
@@ -169,15 +170,15 @@ export class GameFacade {
       this.cancelGame$ = this.gameService
         .cancel(this.gameState.value.gameId)
         .pipe(
-          shareReplay(),
           tap(() => {
             this.updateState(null);
             this.requestInProgress.next(false);
-          })
+          }),
+          shareReplay()
         );
     }
-    console.log('asdf', this.cancelGame$);
     this.cancelGame$.subscribe();
+    return this.cancelGame$;
   }
 
   checkWords() {
@@ -190,21 +191,23 @@ export class GameFacade {
       textGapWordEntities.get(wordId)
     );
 
-    console.log('WORDS TO CHECK', wordsToCheck);
-
-    this.gameService
+    const checkWords$ = this.gameService
       .checkWords(state.gameId, wordsToCheck)
-      .subscribe((evaluatedWords: Word[]) => {
-        console.log('CHECKED WORDS', evaluatedWords);
-        const state = this.gameState.getValue();
+      .pipe(shareReplay());
 
-        for (let word of evaluatedWords) {
-          state.textWithGaps.replace(word.id, word);
-        }
+    checkWords$.subscribe((evaluatedWords: Word[]) => {
+      console.log('CHECKED WORDS', evaluatedWords);
+      const state = this.gameState.getValue();
 
-        console.log('final', state);
-        this.gameState.next(state);
-      });
+      for (let word of evaluatedWords) {
+        state.textWithGaps.replace(word.id, word);
+      }
+
+      console.log('final', state);
+      this.gameState.next(state);
+    });
+
+    return checkWords$;
   }
 
   private getTextWithGaps(words: Word[]): Word[] {
@@ -245,8 +248,6 @@ export class GameFacade {
   private clearState() {
     let state = this.gameState.getValue();
 
-    state.textWithGaps.deleteAll();
-    state.missingWords.deleteAll();
     state.gameId = null;
     state.gameStatus = null;
 

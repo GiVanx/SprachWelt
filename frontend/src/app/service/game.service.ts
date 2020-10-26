@@ -42,16 +42,16 @@ export class GameService {
     console.log('ADD TEXT', text);
     this.game = leakyGameMock;
     // return this.http.post<TextWithGaps>(environment.textEndpoint(), text);
-    return of(this.game);
+    return of(this.game).pipe(delay(this.MOCK_DELAY));
   }
 
   cancel(id: number): Observable<any> {
     this.game = null;
-    return of(null);
+    return of(null).pipe(delay(this.MOCK_DELAY));
   }
 
   checkWords(gameId: number, words: Word[]): Observable<Word[]> {
     // return this.http.post<Word[]>(environment.textCheckEndpoint(textId), words);
-    return of(checkedWordsMock).pipe(debounceTime(this.MOCK_DELAY));
+    return of(checkedWordsMock).pipe(delay(this.MOCK_DELAY));
   }
 }
