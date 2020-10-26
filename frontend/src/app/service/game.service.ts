@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { leakyGameMock } from '../mock-data/leaky-text-game.data';
 import { Word } from '../model/word';
 import { checkedWordsMock } from '../mock-data/checked-words.data';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, delay } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { GameStatus } from '../model/game-status';
 
@@ -13,19 +13,24 @@ import { GameStatus } from '../model/game-status';
 })
 export class GameService {
   game = null;
+  MOCK_DELAY = 500;
 
   constructor(private http: HttpClient) {}
 
   getActiveGame(): Observable<LeakyTextGame> {
-    return of(this.game);
+    return of(this.game).pipe(delay(this.MOCK_DELAY));
   }
 
   startGame(id: number) {
-    return of({ ...this.game, status: GameStatus.STARTED });
+    console.log('start game request');
+    return of({ ...this.game, status: GameStatus.STARTED }).pipe(
+      delay(this.MOCK_DELAY)
+    );
   }
 
   remix(id: number, level: number) {
-    return of(this.game);
+    console.log('remix request issued');
+    return of(this.game).pipe(delay(this.MOCK_DELAY));
   }
 
   save(game: LeakyTextGame): Observable<LeakyTextGame> {
@@ -47,6 +52,6 @@ export class GameService {
 
   checkWords(gameId: number, words: Word[]): Observable<Word[]> {
     // return this.http.post<Word[]>(environment.textCheckEndpoint(textId), words);
-    return of(checkedWordsMock).pipe(debounceTime(2000));
+    return of(checkedWordsMock).pipe(debounceTime(this.MOCK_DELAY));
   }
 }

@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, pipe } from 'rxjs';
-import { GameState, initialWordState } from './game.state';
-import { delay, map, tap } from 'rxjs/operators';
-import { GameService } from '../service/game.service';
-import { WordStatus } from '../model/word-status';
-import { Word } from '../model/word';
-import { WordUtils } from '../model/word-utils';
-import { LeakyTextGame } from '../model/text-with-gaps';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
+import { LeakyTextGame } from '../model/text-with-gaps';
+import { Word } from '../model/word';
+import { WordStatus } from '../model/word-status';
+import { WordUtils } from '../model/word-utils';
+import { GameService } from '../service/game.service';
+import { GameState, initialWordState } from './game.state';
 
 @Injectable({
   providedIn: 'root',
@@ -16,11 +16,18 @@ export class GameFacade {
   private gameState: BehaviorSubject<GameState> = new BehaviorSubject(
     initialWordState
   );
-  private requestInProgress: BehaviorSubject<Boolean> = new BehaviorSubject(
+  private requestInProgress: BehaviorSubject<boolean> = new BehaviorSubject(
     false
   );
+  private remixGame$: Observable<LeakyTextGame>;
+  private startGame$: Observable<LeakyTextGame>;
+  private cancelGame$: Observable<any>;
 
-  constructor(private wordService: GameService, private wordUtils: WordUtils) {}
+  constructor(private gameService: GameService, private wordUtils: WordUtils) {}
+
+  selectActiveGameStatus() {
+    return this.gameState.asObservable().pipe(map((game) => game.gameStatus));
+  }
 
   selectActiveGameId() {
     return this.gameState.asObservable().pipe(map((game) => game.gameId));
@@ -70,18 +77,11 @@ export class GameFacade {
   moveWordFromTextGapToMissingWords(word: Word) {
     let state = this.gameState.getValue();
 
-    console.log('moveWordFromTextGapToMissingWords', 'word', word);
-
     const newTextGap = {
       ...word,
       id: uuidv4(),
       status: WordStatus.MISSING,
     };
-    console.log(
-      'moveWordFromTextGapToMissingWords',
-      'new text gap',
-      newTextGap
-    );
     state.textWithGaps.replace(word.id, newTextGap);
 
     state.missingWords.add({
@@ -108,7 +108,7 @@ export class GameFacade {
   }
 
   createGameRequest(text: string) {
-    this.wordService.create(text).subscribe((response) => {
+    this.gameService.create(text).subscribe((response) => {
       console.log('server response', response);
       this.updateState(response);
     });
@@ -116,29 +116,68 @@ export class GameFacade {
 
   getActiveGameRequest() {
     this.requestInProgress.next(true);
-    return this.wordService.getActiveGame().pipe(
+    return this.gameService.getActiveGame().pipe(
       tap((response) => {
         this.updateState(response);
         this.requestInProgress.next(false);
-      }),
-      delay(500)
+      })
     );
   }
 
   startGameRequest() {
-    this.wordService
-      .startGame(this.gameState.value.gameId)
-      .subscribe((response) => {
-        this.updateState(response);
-      });
+    console.log('startGameRequest');
+    this.requestInProgress.next(true);
+    if (!this.startGame$) {
+      // TODO: check if this works when a new game is created
+      // I think the gameId will remain the same.
+      // TODO: check that when using a http request, the request is
+      // sent each time without shareReplay().
+      this.startGame$ = this.gameService
+        .startGame(this.gameState.value.gameId)
+        .pipe(
+          tap((response) => {
+            this.updateState(response);
+            this.requestInProgress.next(false);
+          }),
+          shareReplay()
+        );
+    }
+
+    this.startGame$.subscribe();
+  }
+
+  remixGameRequest(level) {
+    this.requestInProgress.next(true);
+    if (!this.remixGame$) {
+      this.remixGame$ = this.gameService
+        .remix(this.gameState.value.gameId, level)
+        .pipe(
+          shareReplay(),
+          tap((response) => {
+            console.log('got a response');
+            this.updateState(response);
+            this.requestInProgress.next(false);
+          })
+        );
+    }
+    this.remixGame$.subscribe();
   }
 
   cancelGameRequest() {
-    this.wordService
-      .cancel(this.gameState.value.gameId)
-      .subscribe((response) => {
-        // TODO: clear state
-      });
+    this.requestInProgress.next(true);
+    if (!this.cancelGame$) {
+      this.cancelGame$ = this.gameService
+        .cancel(this.gameState.value.gameId)
+        .pipe(
+          shareReplay(),
+          tap(() => {
+            this.updateState(null);
+            this.requestInProgress.next(false);
+          })
+        );
+    }
+    console.log('asdf', this.cancelGame$);
+    this.cancelGame$.subscribe();
   }
 
   checkWords() {
@@ -153,7 +192,7 @@ export class GameFacade {
 
     console.log('WORDS TO CHECK', wordsToCheck);
 
-    this.wordService
+    this.gameService
       .checkWords(state.gameId, wordsToCheck)
       .subscribe((evaluatedWords: Word[]) => {
         console.log('CHECKED WORDS', evaluatedWords);
@@ -189,17 +228,28 @@ export class GameFacade {
     if (game) {
       let state = this.gameState.getValue();
 
-      console.log('updateState: ', game.textWithGaps);
-
       const textWithGaps = this.getTextWithGaps(game.textWithGaps);
-      console.log('text with gaps', textWithGaps);
       state.textWithGaps.addAll(textWithGaps);
 
       state.totalCountWordsToBeEvaluated = game.missingWords.length;
       state.missingWords.addAll(game.missingWords);
       state.gameId = game.id;
+      state.gameStatus = game.status;
 
       this.gameState.next(state);
+    } else {
+      this.clearState();
     }
+  }
+
+  private clearState() {
+    let state = this.gameState.getValue();
+
+    state.textWithGaps.deleteAll();
+    state.missingWords.deleteAll();
+    state.gameId = null;
+    state.gameStatus = null;
+
+    this.gameState.next(state);
   }
 }

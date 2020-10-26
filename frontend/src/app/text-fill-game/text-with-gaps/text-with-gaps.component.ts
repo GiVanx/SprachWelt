@@ -21,6 +21,8 @@ export class TextWithGapsComponent implements OnInit {
   ngOnInit(): void {
     this.textWithGaps$ = this.textStore.selectAllTextWithGaps();
 
+    this.textWithGaps$.subscribe((g) => console.log('text with gaps', g));
+
     this.uiStore.getSelectedTextGapId().subscribe((selected) => {
       if (selected === null && this.wordsDisplayComponent) {
         this.wordsDisplayComponent.clearSelection();

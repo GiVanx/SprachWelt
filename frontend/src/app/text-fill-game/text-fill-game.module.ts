@@ -12,6 +12,7 @@ import { AppLayoutComponent } from '../layout/app-layout/app-layout.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const routes: Routes = [
   {
@@ -42,6 +43,7 @@ const routes: Routes = [
     AppCommonModule,
     LayoutModule,
     FlexLayoutModule,
+    MatProgressSpinnerModule,
   ],
   exports: [TextFillGameComponent],
 })

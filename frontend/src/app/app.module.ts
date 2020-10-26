@@ -23,6 +23,7 @@ import { NewGameDialogComponent } from './new-game-dialog/new-game-dialog.compon
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { GlobalErrorHandler } from './service/global-error.handler';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { CancelGameDialogComponent } from './cancel-game-dialog/cancel-game-dialog.component';
 
 export function appInitializer(authService: AuthService) {
   return () =>
@@ -39,6 +40,7 @@ export function appInitializer(authService: AuthService) {
     TextInputHeaderComponent,
     HomeComponent,
     NewGameDialogComponent,
+    CancelGameDialogComponent,
   ],
   imports: [
     FormsModule,

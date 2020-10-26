@@ -90,6 +90,13 @@ export class WordStateReducer {
     }
     return null;
   }
+
+  deleteAll() {
+    const newState = { ...this.state };
+    newState.ids = [];
+    newState.words = new Map();
+    this.state = newState;
+  }
 }
 
 export const initalState = {};
