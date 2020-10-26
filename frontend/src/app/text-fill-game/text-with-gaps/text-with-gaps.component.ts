@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TextStore } from '../../state/text.store';
+import { GameFacade } from '../../state/game.facade';
 import { Word } from '../../model/word';
 import { UiStore } from '../../state/ui.store';
 import { WordDisplayComponent } from '../../app-common/word-display/word-display.component';
@@ -16,7 +16,7 @@ export class TextWithGapsComponent implements OnInit {
 
   @ViewChild('wordsDisplay') wordsDisplayComponent: WordDisplayComponent;
 
-  constructor(private textStore: TextStore, private uiStore: UiStore) {}
+  constructor(private textStore: GameFacade, private uiStore: UiStore) {}
 
   ngOnInit(): void {
     this.textWithGaps$ = this.textStore.selectAllTextWithGaps();

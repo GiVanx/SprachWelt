@@ -12,7 +12,7 @@ import { AuthService } from '../service/auth.service';
 @Injectable({
   providedIn: 'root',
 })
-export class ErrorInterceptor implements HttpInterceptor {
+export class HttpErrorInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
@@ -20,10 +20,10 @@ export class ErrorInterceptor implements HttpInterceptor {
       catchError((err) => {
         if ([401, 403].includes(err.status) && this.authService.loadUser()) {
           this.authService.logout();
-          this.router.navigate(['home']);
+          this.router.navigate(['login']);
         }
 
-        console.error(err);
+        console.log('error', err);
         return throwError(err);
       })
     );

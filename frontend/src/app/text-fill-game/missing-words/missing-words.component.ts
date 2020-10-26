@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TextWithGaps } from '../../model/text-with-gaps';
+import { LeakyTextGame } from '../../model/text-with-gaps';
 import { Word } from '../../model/word';
-import { TextStore } from '../../state/text.store';
+import { GameFacade } from '../../state/game.facade';
 import { UiStore } from '../../state/ui.store';
 
 @Component({
@@ -13,7 +13,7 @@ import { UiStore } from '../../state/ui.store';
 export class MissingWordsComponent implements OnInit {
   missingWords$: Observable<Word[]>;
 
-  constructor(private textStore: TextStore, private uiStore: UiStore) {}
+  constructor(private textStore: GameFacade, private uiStore: UiStore) {}
 
   ngOnInit(): void {
     this.missingWords$ = this.textStore.selectAllMissingWords();

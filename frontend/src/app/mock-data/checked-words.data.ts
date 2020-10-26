@@ -3,18 +3,18 @@ import { WordStatus } from '../model/word-status';
 
 export const checkedWordsMock: Word[] = [
   {
-    id: '5e804836986b3a5f225885f3',
-    text: 'waren',
+    id: 1,
+    content: 'waren',
     status: WordStatus.OK,
   },
   {
-    id: '5e804836986b3a5f225885fe',
-    text: 'das',
+    id: 2,
+    content: 'das',
     status: WordStatus.WRONG,
   },
   {
-    text: 'Jahre',
-    id: '5e804836986b3a5f225885f6',
+    content: 'Jahre',
+    id: 3,
     status: WordStatus.OK,
   },
 ];

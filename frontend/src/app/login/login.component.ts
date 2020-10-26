@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { filter, first } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { AuthService } from './service/auth.service';
 import { GoogleLoginProviderService } from './service/google-login.provider';
 import { User } from './state/model/user';
@@ -13,24 +13,25 @@ import { User } from './state/model/user';
 })
 export class LoginComponent implements OnInit {
   user$: Observable<User>;
+  navigationUrl: string;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    this.user$ = this.authService.user$();
-    this.user$
-      .pipe(
-        filter((u) => u !== null && u !== undefined),
-        first()
-      )
-      .subscribe((user) => this.router.navigate([''])); // TODO: may be change the route?
+    this.navigationUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   authenticate(authType: string) {
     this.authService
       .authenticate(this.getProviderId(authType))
       .pipe(first())
-      .subscribe();
+      .subscribe((data) => {
+        this.router.navigateByUrl(this.navigationUrl);
+      });
   }
 
   getProviderId(authType: string) {

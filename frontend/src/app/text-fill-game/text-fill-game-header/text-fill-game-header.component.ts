@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TextStore } from '../../state/text.store';
+import { GameFacade } from '../../state/game.facade';
 import { Difficulty } from 'src/app/model/difficulty';
 
 @Component({
@@ -8,9 +8,13 @@ import { Difficulty } from 'src/app/model/difficulty';
   styleUrls: ['./text-fill-game-header.component.less'],
 })
 export class TextFillGameHeaderComponent implements OnInit {
-  constructor(private store: TextStore) {}
+  MAX_COUNT_LEVELS = 10;
+  levels: number[];
+  constructor(private store: GameFacade) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.levels = new Array(this.MAX_COUNT_LEVELS).fill(0).map((x, i) => i + 1);
+  }
 
   difficultyEnum() {
     return Difficulty;

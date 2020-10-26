@@ -8,7 +8,12 @@ Elements:
 
 	* Will show a Happy Emoji. :)
 	* Will show the message: Congratulations! x out of y words are correct!
-	* The 'New Game' button will be below.
+	* The 'New Game' button.
+	* The 'Dashboard' button.
+	
+	Actions:
+		1.1 On 'New Game' click go to 4.
+		1.2 On 'Dashboard' click go to 6.
 
 2. Error message Popup
 
@@ -19,21 +24,53 @@ Elements:
 	State 1 (not logged in):
 		* Will show the Game Icon on the left and the Login button on the right.
 
+		Actions:
+			3.1.1 User clicks on Login and is redirected to Login Page (go to 0).
+
 	State 2 (logged in):
-		* Will show the Game Icon on the left and the 'Welcome, Ivan Gandacov!' message and Logout button on the right.
+		* On the left: 
+			- Game Icon and the Dashboard link
+		* On the right:	
+			- 'Welcome, Ivan Gandacov!' message and Logout button on the right.
+			
+		Actions:
+			3.2.1 User clicks on Logout and go to 2.
+			3.2.2 User clicks on Dashboard and go to 6.
 
 4. App Footer
 
 	* Will show the @Copyright in the middle.
 
+5. Game already in progress pop-up
+
+	* Message: "You already have a game in progress."
+	* Button 'Dashboard'. On click, will redirect to dashboard.
+
+6. Game not found
+	* Message: "Game not found"
+	* Button 'Dashboard'. On click, will redirect to dashboard.
+
 Workflow:
+
+0. Login
+
+	User has the option to authenticate with Google.
+	
+	0.1 User clicks on Google authentication button.
+	0.2 A google auth pop-up appears and the user authenticates.
+	0.3 If error, an error pop-up will be shown.
+	0.4 If ok, the user is redirected back to home page (/).
 
 1. User enters the application website at a random URL:
 
 	1.1 If he is not logged in already, he is redirected to /home page, go to 2.1.
 	1.2 If he is logged in:
 		1.2.1 If user tries to access /home page, go to 2.2.
-		1.2.2 If the user tries to access /text-fill or /text-input directly, go to 3.
+		1.2.2 If /text-input
+			1.2.2.1 If the user has a game in progress show Elements#5.
+			1.2.2.2 If not, then go to 4.
+		1.2.3 If /text-fill/{id}
+			1.2.3.1 If game with '{id}' not found, then show Elements#6.
 	
 2. On the Home page:
 
@@ -45,21 +82,11 @@ Workflow:
 		UI State:
 			* Elements#3State#1
 
-		2.1.1 User clicks on Login, the Google Authentication Window pops-up.
-		2.1.2 If user authenticated successfully, go to 3.
-		2.1.3 If not, show Elements#2 with Login Failed message.
-		
 	2.2 Logged in:
 
 		UI State:
 			* Elements#3State#2
 
-		2.2.1 User clicks on Logout, go to 2.1.
-	
-3. Check if the user has an existing active game.
-	3.1 If no, then redirect to /text-input (go to 4).
-	3.2 If yes, then redirect to /text-fill (go to 5).
-	
 4. Text input (/text-input):
 
 	UI State:
@@ -71,9 +98,9 @@ Workflow:
 	4.2 If text.words.length >= 5, then click on Done and go to 4.1, else go to 5.
 		On Done click the Text will be saved in the database.
 	
-5. Playing the game
+5. Playing the game (/text-fill/{id})
 	
-	5.1. Game has not started yet (/text-fill):
+	5.1. Game has not started yet:
 
 		UI State:
 			* Elements#3State#2
@@ -88,8 +115,7 @@ Workflow:
 		5.1.4 When done, user clicks on "Play" button and go to 5.2.
 			  On Play click the Game will be saved in the database.
 			
-	
-	5.2. Game has started (/text-fill):
+	5.2. Game has started:
 
 		UI State:
 			* Elements#3State#2
@@ -112,3 +138,16 @@ Workflow:
 		5.3.1 A popup will appear asking: "Do you want to really cancel the game? Yes / No".
 		5.3.2 If click on No, then go to 5.2.
 		5.3.3 If click on Yes, then go to 4.
+
+6. Dashboard
+
+	UI State:
+		* Elements#3State#2
+		* It will show a list of cards, each one representing a game that is currently
+		  in progress. At the moment a single game can be in progress.
+		* If there are no games in progress, a + card will be shown.
+		* If there are games in progress show a card for each game (at the moment of writing only one card).
+		
+	Actions:
+		5.1 On + card click, go to 4.
+		5.2 On game card click, go to 5.

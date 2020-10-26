@@ -6,6 +6,6 @@ import { Word } from './word';
 })
 export class WordUtils {
   deepCopy(word: Word) {
-    return new Word(word.id, word.text, word.position, word.status);
+    return new Word(word.id, word.content, word.position, word.status);
   }
 }
