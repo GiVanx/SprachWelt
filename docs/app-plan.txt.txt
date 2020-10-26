@@ -113,7 +113,6 @@ Workflow:
 		5.1.2 On Level change the text will be remixed automatically.
 		5.1.3 User can request another remix by clicking on Remix button.
 		5.1.4 When done, user clicks on "Play" button and go to 5.2.
-			  On Play click the Game will be saved in the database.
 			
 	5.2. Game has started:
 
@@ -135,7 +134,7 @@ Workflow:
 		UI State:
 			* Same as 5.1
 			
-		5.3.1 A popup will appear asking: "Do you want to really cancel the game? Yes / No".
+		5.3.1 A popup will appear asking: "Do you really want to cancel the game? Yes / No".
 		5.3.2 If click on No, then go to 5.2.
 		5.3.3 If click on Yes, then go to 4.
 
