@@ -18,6 +18,7 @@ export class TextFillGameHeaderComponent implements OnInit {
   selectedLevel = 2;
   levels: number[];
   activeGameStatus$: Observable<GameStatus>;
+  textReadyToCheck$: Observable<boolean>;
 
   constructor(
     private gameFacade: GameFacade,
@@ -29,6 +30,7 @@ export class TextFillGameHeaderComponent implements OnInit {
   ngOnInit(): void {
     this.levels = new Array(this.MAX_COUNT_LEVELS).fill(0).map((x, i) => i + 1);
     this.activeGameStatus$ = this.gameFacade.selectActiveGameStatus();
+    this.textReadyToCheck$ = this.gameFacade.selectTextReadyToCheck();
   }
 
   gameStatus() {

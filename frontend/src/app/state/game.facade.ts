@@ -89,6 +89,10 @@ export class GameFacade {
       status: WordStatus.IDLE,
     });
 
+    state.wordsToBeEvaluated = state.wordsToBeEvaluated.filter(
+      (id) => id !== word.id
+    );
+
     this.gameState.next(state);
     return newTextGap;
   }
@@ -103,6 +107,7 @@ export class GameFacade {
     });
 
     state.missingWords.delete(missingWord);
+    state.wordsToBeEvaluated.push(missingWord.id);
 
     this.gameState.next(state);
   }
