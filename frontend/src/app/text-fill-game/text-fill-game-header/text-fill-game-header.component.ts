@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { filter, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { CancelGameDialogComponent } from 'src/app/cancel-game-dialog/cancel-game-dialog.component';
 import { GameStatus } from 'src/app/model/game-status';
 import { SpinnerOverlayService } from 'src/app/service/spinner-overlay.service';
@@ -29,7 +29,9 @@ export class TextFillGameHeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.levels = new Array(this.MAX_COUNT_LEVELS).fill(0).map((x, i) => i + 1);
-    this.activeGameStatus$ = this.gameFacade.selectActiveGameStatus();
+    this.activeGameStatus$ = this.gameFacade
+      .selectActiveGame()
+      .pipe(map((game) => game.status));
     this.textReadyToCheck$ = this.gameFacade.selectTextReadyToCheck();
   }
 

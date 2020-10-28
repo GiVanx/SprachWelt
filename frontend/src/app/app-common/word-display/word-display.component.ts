@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Word } from '../../model/word';
+import { Word } from '../../model/word.model';
 import { WordStatus } from '../../model/word-status';
 
 @Component({

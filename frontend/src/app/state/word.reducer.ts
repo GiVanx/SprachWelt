@@ -1,60 +1,62 @@
-import { Word } from '../model/word';
+interface Entity {
+  id: number;
+}
 
-export class MissingWordState {
+export class State<T extends Entity> {
   readonly ids: number[];
-  readonly words: Map<number, Word>;
+  readonly entities: Map<number, T>;
 }
 
 export const initialState = {
   ids: [],
-  words: new Map(),
+  entities: new Map(),
 };
 
-export class WordStateReducer {
-  private state: MissingWordState = initialState;
+export class StateReducer<T extends Entity> {
+  private state: State<T> = initialState;
 
-  add(word: Word) {
+  upsert(entity: T) {
     const newState = { ...this.state };
-    const ids = [...this.state.ids];
-    ids.push(word.id);
+    const ids = [...this.state.ids].filter((id) => id !== entity.id);
+    ids.push(entity.id);
     newState.ids = ids;
-    newState.words = new Map(this.state.words);
-    newState.words.set(word.id, { ...word });
+    newState.entities = new Map(this.state.entities);
+    newState.entities.set(entity.id, { ...entity });
     this.state = newState;
   }
 
-  delete(word: Word) {
-    if (this.state.words.has(word.id)) {
+  delete(entity: T) {
+    if (this.state.entities.has(entity.id)) {
       const newState = { ...this.state };
 
       const ids = [...this.state.ids];
-      const idx = this.state.ids.findIndex((id) => id === word.id);
+      const idx = this.state.ids.findIndex((id) => id === entity.id);
       ids.splice(idx, 1);
       newState.ids = ids;
 
-      newState.words = new Map(this.state.words);
-      newState.words.delete(word.id);
+      newState.entities = new Map(this.state.entities);
+      newState.entities.delete(entity.id);
 
       this.state = newState;
     }
   }
 
-  replace(oldWordId: number, newWord: Word) {
-    if (this.state.words.has(oldWordId)) {
+  replace(sourceId: number, newEntity: T) {
+    if (this.state.entities.has(sourceId)) {
       const newState = { ...this.state };
 
-      if (oldWordId !== newWord.id) {
+      if (sourceId !== newEntity.id) {
         const ids = [...this.state.ids];
-        const idx = this.state.ids.findIndex((id) => id === oldWordId);
-        ids.splice(idx, 1, newWord.id);
+        const idx = this.state.ids.findIndex((id) => id === sourceId);
+        ids.splice(idx, 1, newEntity.id);
         newState.ids = ids;
       }
 
-      newState.words = new Map(this.state.words);
-      newState.words.set(newWord.id, newWord);
+      newState.entities = new Map(this.state.entities);
+      newState.entities.set(newEntity.id, newEntity);
 
-      if (oldWordId !== newWord.id) {
-        newState.words.delete(oldWordId);
+      if (sourceId !== newEntity.id) {
+        newState.entities.delete(sourceId);
       }
 
       this.state = newState;
@@ -64,28 +66,28 @@ export class WordStateReducer {
   selectAll() {
     const words = [];
     for (let id of this.state.ids) {
-      words.push({ ...this.state.words.get(id) });
+      words.push({ ...this.state.entities.get(id) });
     }
     return words;
   }
 
   selectEntities() {
-    return new Map(this.state.words);
+    return new Map(this.state.entities);
   }
 
-  addAll(words: Word[]) {
+  addAll(words: T[]) {
     const newState = { ...this.state };
 
     newState.ids = words.map((word) => word.id);
-    newState.words = new Map(words.map((word) => [word.id, word]));
+    newState.entities = new Map(words.map((word) => [word.id, word]));
 
     this.state = newState;
   }
 
   selectById(id) {
-    if (this.state.words.has(id)) {
+    if (this.state.entities.has(id)) {
       return {
-        ...this.state.words.get(id),
+        ...this.state.entities.get(id),
       };
     }
     return null;
@@ -94,9 +96,7 @@ export class WordStateReducer {
   deleteAll() {
     const newState = { ...this.state };
     newState.ids = [];
-    newState.words = new Map();
+    newState.entities = new Map();
     this.state = newState;
   }
 }
-
-export const initalState = {};

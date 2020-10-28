@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
 import { GameFacade } from '../../state/game.facade';
-import { Word } from '../../model/word';
+import { Word } from '../../model/word.model';
 import { UiStore } from '../../state/ui.store';
 import { WordDisplayComponent } from '../../app-common/word-display/word-display.component';
 

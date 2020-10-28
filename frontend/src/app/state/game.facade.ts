@@ -2,35 +2,38 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
-import { LeakyTextGame } from '../model/text-with-gaps';
-import { Word } from '../model/word';
+import { LeakyTextGameView } from '../view/leaky-text-game.view';
+import { Word } from '../model/word.model';
 import { WordStatus } from '../model/word-status';
-import { WordUtils } from '../model/word-utils';
 import { GameService } from '../service/game.service';
-import { GameState, initialWordState } from './game.state';
+import { GameState, initialGameState } from './game.state';
+import { LeakyTextGame } from '../model/leaky-text-game.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameFacade {
   private gameState: BehaviorSubject<GameState> = new BehaviorSubject(
-    initialWordState
+    initialGameState
   );
   private requestInProgress: BehaviorSubject<boolean> = new BehaviorSubject(
     false
   );
-  private remixGame$: Observable<LeakyTextGame>;
-  private startGame$: Observable<LeakyTextGame>;
-  private cancelGame$: Observable<any>;
 
-  constructor(private gameService: GameService, private wordUtils: WordUtils) {}
+  constructor(private gameService: GameService) {}
 
-  selectActiveGameStatus() {
-    return this.gameState.asObservable().pipe(map((game) => game.gameStatus));
+  selectActiveGame(): Observable<LeakyTextGame> {
+    return this.gameState
+      .asObservable()
+      .pipe(
+        map((gameState) => gameState.game.selectById(gameState.activeGameId))
+      );
   }
 
   selectActiveGameId() {
-    return this.gameState.asObservable().pipe(map((game) => game.gameId));
+    return this.gameState
+      .asObservable()
+      .pipe(map((gameState) => gameState.activeGameId));
   }
 
   selectRequestInProgress() {
@@ -84,7 +87,7 @@ export class GameFacade {
     };
     state.textWithGaps.replace(word.id, newTextGap);
 
-    state.missingWords.add({
+    state.missingWords.upsert({
       ...word,
       status: WordStatus.IDLE,
     });
@@ -113,77 +116,71 @@ export class GameFacade {
   }
 
   createGameRequest(text: string) {
-    this.gameService.create(text).subscribe((response) => {
-      console.log('server response', response);
+    this.requestInProgress.next(true);
+
+    const createGame$ = this.gameService.create(text).pipe(shareReplay());
+
+    createGame$.subscribe((response) => {
       this.updateState(response);
+      this.requestInProgress.next(false);
     });
+
+    return createGame$;
   }
 
   getActiveGameRequest() {
     this.requestInProgress.next(true);
-    return this.gameService.getActiveGame().pipe(
+
+    const activeGame$ = this.gameService.getActiveGame().pipe(
       tap((response) => {
         this.updateState(response);
         this.requestInProgress.next(false);
-      })
+      }),
+      shareReplay()
     );
+
+    activeGame$.subscribe();
+
+    return activeGame$;
   }
 
   startGameRequest() {
     this.requestInProgress.next(true);
-    if (!this.startGame$) {
-      // TODO: check if this works when a new game is created
-      // I think the gameId will remain the same.
-      // TODO: check that when using a http request, the request is
-      // sent each time without shareReplay().
-      this.startGame$ = this.gameService
-        .startGame(this.gameState.value.gameId)
-        .pipe(
-          tap((response) => {
-            this.updateState(response);
-            this.requestInProgress.next(false);
-          }),
-          shareReplay()
-        );
-    }
+    const startGame$ = this.gameService
+      .startGame(this.gameState.getValue().activeGameId)
+      .pipe(shareReplay());
 
-    this.startGame$.subscribe();
-    return this.startGame$;
+    startGame$.subscribe((response) => {
+      this.updateState(response);
+      this.requestInProgress.next(false);
+    });
+    return startGame$;
   }
 
   remixGameRequest(level) {
     this.requestInProgress.next(true);
-    if (!this.remixGame$) {
-      this.remixGame$ = this.gameService
-        .remix(this.gameState.value.gameId, level)
-        .pipe(
-          tap((response) => {
-            console.log('got a response');
-            this.updateState(response);
-            this.requestInProgress.next(false);
-          }),
-          shareReplay()
-        );
-    }
-    this.remixGame$.subscribe();
-    return this.remixGame$;
+    const remixGame$ = this.gameService
+      .remix(this.gameState.getValue().activeGameId, level)
+      .pipe(shareReplay());
+
+    remixGame$.subscribe((response) => {
+      this.updateState(response);
+      this.requestInProgress.next(false);
+    });
+    return remixGame$;
   }
 
   cancelGameRequest() {
     this.requestInProgress.next(true);
-    if (!this.cancelGame$) {
-      this.cancelGame$ = this.gameService
-        .cancel(this.gameState.value.gameId)
-        .pipe(
-          tap(() => {
-            this.updateState(null);
-            this.requestInProgress.next(false);
-          }),
-          shareReplay()
-        );
-    }
-    this.cancelGame$.subscribe();
-    return this.cancelGame$;
+    const cancelGame$ = this.gameService
+      .cancel(this.gameState.getValue().activeGameId)
+      .pipe(shareReplay());
+
+    cancelGame$.subscribe(() => {
+      this.updateState(null);
+      this.requestInProgress.next(false);
+    });
+    return cancelGame$;
   }
 
   checkWords() {
@@ -197,7 +194,7 @@ export class GameFacade {
     );
 
     const checkWords$ = this.gameService
-      .checkWords(state.gameId, wordsToCheck)
+      .checkWords(state.activeGameId, wordsToCheck)
       .pipe(shareReplay());
 
     checkWords$.subscribe((evaluatedWords: Word[]) => {
@@ -232,7 +229,7 @@ export class GameFacade {
     return result;
   }
 
-  private updateState(game: LeakyTextGame) {
+  private updateState(game: LeakyTextGameView) {
     if (game) {
       let state = this.gameState.getValue();
 
@@ -241,8 +238,13 @@ export class GameFacade {
 
       state.totalCountWordsToBeEvaluated = game.missingWords.length;
       state.missingWords.addAll(game.missingWords);
-      state.gameId = game.id;
-      state.gameStatus = game.status;
+      state.game.upsert({
+        ...game,
+        missingWords: game.missingWords.map((w) => w.id),
+        textWithGaps: game.textWithGaps.map((w) => w.id),
+      });
+      state.activeGameId = game.id;
+      console.log('update state', state.activeGameId);
 
       this.gameState.next(state);
     } else {
@@ -253,8 +255,7 @@ export class GameFacade {
   private clearState() {
     let state = this.gameState.getValue();
 
-    state.gameId = null;
-    state.gameStatus = null;
+    state.activeGameId = null;
 
     this.gameState.next(state);
   }

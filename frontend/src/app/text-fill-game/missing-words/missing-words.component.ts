@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { LeakyTextGame } from '../../model/text-with-gaps';
-import { Word } from '../../model/word';
+import { Word } from '../../model/word.model';
 import { GameFacade } from '../../state/game.facade';
 import { UiStore } from '../../state/ui.store';
 

@@ -13,11 +13,6 @@ export class TextFillGameComponent implements OnInit {
   constructor(private uiStore: UiStore, private gameFacade: GameFacade) {}
 
   ngOnInit(): void {
-    console.log('text fill component');
-
-    // TODO: remove this line. It is now used only for testing with mock data.
-    this.gameFacade.createGameRequest('');
-
     this.uiStore
       .getSelection()
       .pipe(

@@ -7,11 +7,18 @@ const TEXT_ENDPOINT = SERVER_URL + '/text'; // TODO: remove this line??
 
 export const environment = {
   production: false,
+  mockServer: true,
   serverUrl: SERVER_URL,
-  textEndpoint: () => SERVER_URL + '/text',
-  textCheckEndpoint: (textId) => TEXT_ENDPOINT + '/' + textId + '/check',
-  googleLoginEndpoint: SERVER_URL + '/login/google',
-  refreshTokenEndpoint: SERVER_URL + '/login/refresh-token',
+  activeGameEndpoint: () => `${SERVER_URL}/active`,
+  createGameEndpoint: () => SERVER_URL,
+  startGameEndpoint: (id: number) => `${SERVER_URL}/${id}/start`,
+  remixEndpoint: (id: number, level: number) =>
+    `${SERVER_URL}/${id}/remix/${level}`,
+  saveGameEndpoint: () => SERVER_URL,
+  checkWordsEndpoint: (id: number) => `${SERVER_URL}/${id}/check`,
+  cancelGameEndpoint: (id: number) => `${SERVER_URL}/${id}/cancel`,
+  googleLoginEndpoint: () => SERVER_URL + '/login/google',
+  refreshTokenEndpoint: () => SERVER_URL + '/login/refresh-token',
 };
 
 /*

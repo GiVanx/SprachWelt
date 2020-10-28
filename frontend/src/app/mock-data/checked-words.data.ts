@@ -1,4 +1,4 @@
-import { Word } from '../model/word';
+import { Word } from '../model/word.model';
 import { WordStatus } from '../model/word-status';
 
 export const checkedWordsMock: Word[] = [
