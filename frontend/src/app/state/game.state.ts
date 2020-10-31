@@ -10,6 +10,7 @@ export interface GameState {
   wordsToBeEvaluated: number[];
   totalCountWordsToBeEvaluated: number;
   activeGameId: number;
+  activeGameSentAtLeastOnce: boolean;
 }
 
 export const initialGameState: GameState = {
@@ -19,4 +20,5 @@ export const initialGameState: GameState = {
   wordsToBeEvaluated: [],
   totalCountWordsToBeEvaluated: 0,
   activeGameId: null,
+  activeGameSentAtLeastOnce: false,
 };

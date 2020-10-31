@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
-import { LeakyTextGameView } from '../view/leaky-text-game.view';
-import { Word } from '../model/word.model';
-import { WordStatus } from '../model/word-status';
-import { GameService } from '../service/game.service';
-import { GameState, initialGameState } from './game.state';
 import { LeakyTextGame } from '../model/leaky-text-game.model';
+import { WordStatus } from '../model/word-status';
+import { Word } from '../model/word.model';
+import { GameService } from '../service/game.service';
+import { LeakyTextGameView } from '../view/leaky-text-game.view';
+import { GameState, initialGameState } from './game.state';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +21,12 @@ export class GameFacade {
   );
 
   constructor(private gameService: GameService) {}
+
+  selectActiveGameRequestSentAtLeastOnce(): Observable<boolean> {
+    return this.gameState
+      .asObservable()
+      .pipe(map((gameState) => gameState.activeGameSentAtLeastOnce));
+  }
 
   selectActiveGame(): Observable<LeakyTextGame> {
     return this.gameState
@@ -230,9 +236,9 @@ export class GameFacade {
   }
 
   private updateState(game: LeakyTextGameView) {
+    let state = this.gameState.getValue();
+    state.activeGameSentAtLeastOnce = true;
     if (game) {
-      let state = this.gameState.getValue();
-
       const textWithGaps = this.getTextWithGaps(game.textWithGaps);
       state.textWithGaps.addAll(textWithGaps);
 
@@ -244,19 +250,9 @@ export class GameFacade {
         textWithGaps: game.textWithGaps.map((w) => w.id),
       });
       state.activeGameId = game.id;
-      console.log('update state', state.activeGameId);
-
-      this.gameState.next(state);
     } else {
-      this.clearState();
+      state.activeGameId = null;
     }
-  }
-
-  private clearState() {
-    let state = this.gameState.getValue();
-
-    state.activeGameId = null;
-
     this.gameState.next(state);
   }
 }

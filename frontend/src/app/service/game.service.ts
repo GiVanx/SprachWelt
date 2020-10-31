@@ -20,11 +20,7 @@ export class GameService {
   constructor(private http: HttpClient) {}
 
   getActiveGame(): Observable<LeakyTextGameView> {
-    if (environment.mockServer) {
-      return of(leakyGameMock).pipe(delay(this.MOCK_DELAY));
-    }
-
-    return this.http.get<LeakyTextGameView>(`${this.SERVER_URL}/active`);
+    return this.http.get<LeakyTextGameView>(`${this.SERVER_URL}/game/active`);
   }
 
   create(text: string): Observable<LeakyTextGameView> {
