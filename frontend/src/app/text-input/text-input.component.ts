@@ -42,9 +42,25 @@ export class TextInputComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(first())
       .subscribe((id) => {
         if (id) {
-          this.dialog.open(NewGameDialogComponent);
+          const diag = this.dialog.open(NewGameDialogComponent, {
+            disableClose: true,
+          });
+          diag.afterClosed().subscribe((result) => {
+            if (result) {
+              this.cancelActiveGame();
+            } else {
+              this.router.navigate(['text-fill']);
+            }
+          });
         }
       });
+  }
+
+  cancelActiveGame() {
+    this.spinnerOverlayService.showSpinner();
+    this.gameFacade.cancelGameRequest().subscribe((result) => {
+      this.spinnerOverlayService.stopSpinner();
+    });
   }
 
   ngAfterViewInit(): void {
