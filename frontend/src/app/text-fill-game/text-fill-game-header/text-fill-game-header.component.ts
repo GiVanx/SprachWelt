@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { CancelGameDialogComponent } from 'src/app/cancel-game-dialog/cancel-game-dialog.component';
 import { GameStatus } from 'src/app/model/game-status';
+import { WordStatus } from 'src/app/model/word-status';
 import { SpinnerOverlayService } from 'src/app/service/spinner-overlay.service';
 import { TaskSuccessDialogComponent } from 'src/app/task-success-dialog/task-success-dialog.component';
 import { GameFacade } from '../../state/game.facade';
@@ -63,7 +64,7 @@ export class TextFillGameHeaderComponent implements OnInit {
   onCheckClick() {
     this.spinnerOverlayService.showSpinner();
     this.gameFacade.checkWords().subscribe((words) => {
-      if (words.length === 0) {
+      if (words.filter((w) => w.status !== WordStatus.OK).length === 0) {
         const diag = this.dialog.open(TaskSuccessDialogComponent);
         diag.afterClosed().subscribe((result) => {
           if (result === 'home') {
