@@ -8,6 +8,7 @@ import com.sprachwelt.repository.GameRepository;
 import com.sprachwelt.facade.TextFacade;
 import com.sprachwelt.facade.UserFacade;
 import com.sprachwelt.utils.Constants;
+import com.sprachwelt.view.GameStatusView;
 import com.sprachwelt.view.GameView;
 import com.sprachwelt.view.WordView;
 import org.modelmapper.ModelMapper;
@@ -58,8 +59,8 @@ public class GameController {
     }
 
     @PutMapping("{id}/start")
-    public GameView startGame(@PathVariable("id") Long id) {
-        return modelMapper.map(gameFacade.start(id), GameView.class);
+    public GameStatusView startGame(@PathVariable("id") Long id) {
+        return modelMapper.map(gameFacade.start(id), GameStatusView.class);
     }
 
     @PutMapping("{gameId}/remix/{level}")
@@ -76,7 +77,11 @@ public class GameController {
 
     @PostMapping("{id}/check")
     public List<WordView> checkWords(@PathVariable("id") Long gameId, @RequestBody List<WordView> words) {
-        return gameFacade.check(gameId, words);
+        List<WordView> checkedWords = gameFacade.check(gameId, words);
+        if (checkedWords.size() == 0) {
+            gameFacade.cancel(gameId);
+        }
+        return checkedWords;
     }
 
     @PutMapping("{id}/cancel")

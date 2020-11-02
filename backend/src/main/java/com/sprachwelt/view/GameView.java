@@ -22,4 +22,16 @@ public class GameView {
         Collections.shuffle(missingWords);
         return missingWords;
     }
+
+    public List<WordView> getTextWithGaps() {
+        textWithGaps.sort((WordView w1, WordView w2) -> {
+            if (w1.getPosition() > w2.getPosition()) {
+                return 1;
+            } else if (w1.getPosition() < w2.getPosition()) {
+                return -1;
+            }
+            return 0;
+        });
+        return textWithGaps;
+    }
 }
