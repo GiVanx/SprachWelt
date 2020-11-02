@@ -5,6 +5,6 @@ import { Word } from '../model/word.model';
 export class LeakyTextGameView {
   id: number;
   status: GameStatus;
-  missingWords: Word[];
-  textWithGaps: Word[];
+  missingWords?: Word[];
+  textWithGaps?: Word[];
 }

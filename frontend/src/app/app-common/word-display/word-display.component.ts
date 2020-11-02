@@ -12,6 +12,7 @@ export class WordDisplayComponent implements OnInit {
   preventSingleClick: boolean;
 
   WORD_PLACEHOLDER = '?????';
+  @Input() disabled: boolean;
   @Input() words: Word[];
   selectedOptions: Word[] = [];
   @Output() onWordSingleClick: EventEmitter<number> = new EventEmitter();

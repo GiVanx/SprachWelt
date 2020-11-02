@@ -1,4 +1,4 @@
 export enum GameStatus {
-  NOT_STARTED,
-  STARTED,
+  NOT_STARTED = 'NOT_STARTED',
+  STARTED = 'STARTED',
 }

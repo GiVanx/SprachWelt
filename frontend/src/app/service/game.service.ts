@@ -8,6 +8,7 @@ import { debounceTime, delay } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { GameStatus } from '../model/game-status';
 import { environment } from 'src/environments/environment';
+import { GameStatusView } from '../view/game-status.view';
 
 @Injectable({
   providedIn: 'root',
@@ -24,23 +25,21 @@ export class GameService {
   }
 
   create(text: string): Observable<LeakyTextGameView> {
-    if (environment.mockServer) {
-      this.game = leakyGameMock;
-      return of(this.game).pipe(delay(this.MOCK_DELAY));
-    }
-
-    return this.http.post<LeakyTextGameView>(this.SERVER_URL, text);
+    return this.http.post<LeakyTextGameView>(`${this.SERVER_URL}/game`, text);
   }
 
-  startGame(id: number) {
-    return of({ ...this.game, status: GameStatus.STARTED }).pipe(
-      delay(this.MOCK_DELAY)
+  startGame(id: number): Observable<GameStatusView> {
+    return this.http.put<GameStatusView>(
+      `${this.SERVER_URL}/game/${id}/start`,
+      null
     );
   }
 
-  remix(id: number, level: number) {
-    console.log('remix request issued');
-    return of(this.game).pipe(delay(this.MOCK_DELAY));
+  remix(id: number, level: number): Observable<LeakyTextGameView> {
+    return this.http.put<LeakyTextGameView>(
+      `${this.SERVER_URL}/game/${id}/remix/${level}`,
+      null
+    );
   }
 
   save(game: LeakyTextGameView): Observable<LeakyTextGameView> {
@@ -49,12 +48,10 @@ export class GameService {
   }
 
   cancel(id: number): Observable<any> {
-    this.game = null;
-    return of(null).pipe(delay(this.MOCK_DELAY));
+    return this.http.put<any>(`${this.SERVER_URL}/game/${id}/cancel`, null);
   }
 
-  checkWords(gameId: number, words: Word[]): Observable<Word[]> {
-    // return this.http.post<Word[]>(environment.textCheckEndpoint(textId), words);
-    return of(checkedWordsMock).pipe(delay(this.MOCK_DELAY));
+  checkWords(id: number, words: Word[]): Observable<Word[]> {
+    return this.http.post<Word[]>(`${this.SERVER_URL}/game/${id}/check`, words);
   }
 }

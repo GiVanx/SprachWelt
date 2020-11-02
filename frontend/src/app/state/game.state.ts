@@ -1,7 +1,6 @@
-import { GameStatus } from '../model/game-status';
 import { LeakyTextGame } from '../model/leaky-text-game.model';
 import { Word } from '../model/word.model';
-import { StateReducer } from './word.reducer';
+import { StateReducer } from './state.reducer';
 
 export interface GameState {
   game: StateReducer<LeakyTextGame>;

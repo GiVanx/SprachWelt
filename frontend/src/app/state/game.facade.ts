@@ -6,6 +6,7 @@ import { LeakyTextGame } from '../model/leaky-text-game.model';
 import { WordStatus } from '../model/word-status';
 import { Word } from '../model/word.model';
 import { GameService } from '../service/game.service';
+import { GameStatusView } from '../view/game-status.view';
 import { LeakyTextGameView } from '../view/leaky-text-game.view';
 import { GameState, initialGameState } from './game.state';
 
@@ -124,12 +125,15 @@ export class GameFacade {
   createGameRequest(text: string) {
     this.requestInProgress.next(true);
 
-    const createGame$ = this.gameService.create(text).pipe(shareReplay());
+    const createGame$ = this.gameService.create(text).pipe(
+      tap((response) => {
+        this.updateState(response);
+        this.requestInProgress.next(false);
+      }),
+      shareReplay()
+    );
 
-    createGame$.subscribe((response) => {
-      this.updateState(response);
-      this.requestInProgress.next(false);
-    });
+    createGame$.subscribe();
 
     return createGame$;
   }
@@ -139,6 +143,7 @@ export class GameFacade {
 
     const activeGame$ = this.gameService.getActiveGame().pipe(
       tap((response) => {
+        console.log('GameFacade:getActiveGameRequest(): ' + response);
         this.updateState(response);
         this.requestInProgress.next(false);
       }),
@@ -154,12 +159,15 @@ export class GameFacade {
     this.requestInProgress.next(true);
     const startGame$ = this.gameService
       .startGame(this.gameState.getValue().activeGameId)
-      .pipe(shareReplay());
+      .pipe(
+        tap((response) => {
+          this.updateGameStatus(response);
+          this.requestInProgress.next(false);
+        }),
+        shareReplay()
+      );
 
-    startGame$.subscribe((response) => {
-      this.updateState(response);
-      this.requestInProgress.next(false);
-    });
+    startGame$.subscribe();
     return startGame$;
   }
 
@@ -167,12 +175,15 @@ export class GameFacade {
     this.requestInProgress.next(true);
     const remixGame$ = this.gameService
       .remix(this.gameState.getValue().activeGameId, level)
-      .pipe(shareReplay());
+      .pipe(
+        tap((response) => {
+          this.updateState(response);
+          this.requestInProgress.next(false);
+        }),
+        shareReplay()
+      );
 
-    remixGame$.subscribe((response) => {
-      this.updateState(response);
-      this.requestInProgress.next(false);
-    });
+    remixGame$.subscribe();
     return remixGame$;
   }
 
@@ -180,12 +191,15 @@ export class GameFacade {
     this.requestInProgress.next(true);
     const cancelGame$ = this.gameService
       .cancel(this.gameState.getValue().activeGameId)
-      .pipe(shareReplay());
+      .pipe(
+        tap(() => {
+          this.updateState(null);
+          this.requestInProgress.next(false);
+        }),
+        shareReplay()
+      );
 
-    cancelGame$.subscribe(() => {
-      this.updateState(null);
-      this.requestInProgress.next(false);
-    });
+    cancelGame$.subscribe();
     return cancelGame$;
   }
 
@@ -204,14 +218,12 @@ export class GameFacade {
       .pipe(shareReplay());
 
     checkWords$.subscribe((evaluatedWords: Word[]) => {
-      console.log('CHECKED WORDS', evaluatedWords);
       const state = this.gameState.getValue();
 
       for (let word of evaluatedWords) {
         state.textWithGaps.replace(word.id, word);
       }
 
-      console.log('final', state);
       this.gameState.next(state);
     });
 
@@ -221,38 +233,72 @@ export class GameFacade {
   private getTextWithGaps(words: Word[]): Word[] {
     const result: Word[] = [];
     let i = 0;
-    let j = i + 1;
-    while (i < words.length && j < words.length) {
-      result.push(words[i]);
-      let position = words[i].position + 1;
-      while (position < words[j].position) {
+    let position = 0;
+
+    do {
+      while (position < words[i].position) {
         result.push(new Word(uuidv4(), null, position, WordStatus.MISSING));
         ++position;
       }
+      result.push(words[i]);
+      position = words[i].position + 1;
       ++i;
-      ++j;
-    }
+    } while (i < words.length);
     return result;
+  }
+
+  private updateGameStatus(game: GameStatusView) {
+    let state = this.gameState.getValue();
+    state.game.upsert(game);
+    this.gameState.next(state);
   }
 
   private updateState(game: LeakyTextGameView) {
     let state = this.gameState.getValue();
     state.activeGameSentAtLeastOnce = true;
     if (game) {
-      const textWithGaps = this.getTextWithGaps(game.textWithGaps);
-      state.textWithGaps.addAll(textWithGaps);
-
-      state.totalCountWordsToBeEvaluated = game.missingWords.length;
-      state.missingWords.addAll(game.missingWords);
-      state.game.upsert({
-        ...game,
-        missingWords: game.missingWords.map((w) => w.id),
-        textWithGaps: game.textWithGaps.map((w) => w.id),
-      });
+      state = this.updateTextWithGaps(game, state);
+      state = this.updateMissingWords(game, state);
+      state = this.updateGame(game, state);
       state.activeGameId = game.id;
     } else {
       state.activeGameId = null;
     }
     this.gameState.next(state);
+  }
+
+  private updateGame(game: LeakyTextGameView, state: GameState) {
+    const gameEntity = state.game.selectById(game.id);
+
+    const missingWords = game.missingWords
+      ? game.missingWords.map((w) => w.id)
+      : gameEntity.missingWords;
+
+    const textWithGaps = game.textWithGaps
+      ? game.textWithGaps.map((w) => w.id)
+      : gameEntity.textWithGaps;
+
+    state.game.upsert({
+      ...game,
+      missingWords,
+      textWithGaps,
+    });
+    return state;
+  }
+
+  private updateTextWithGaps(game: LeakyTextGameView, state: GameState) {
+    if (game.textWithGaps) {
+      const textWithGaps = this.getTextWithGaps(game.textWithGaps);
+      state.textWithGaps.addAll(textWithGaps);
+    }
+    return state;
+  }
+
+  private updateMissingWords(game: LeakyTextGameView, state: GameState) {
+    if (game.missingWords) {
+      state.totalCountWordsToBeEvaluated = game.missingWords.length;
+      state.missingWords.addAll(game.missingWords);
+    }
+    return state;
   }
 }

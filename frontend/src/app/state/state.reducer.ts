@@ -21,7 +21,8 @@ export class StateReducer<T extends Entity> {
     ids.push(entity.id);
     newState.ids = ids;
     newState.entities = new Map(this.state.entities);
-    newState.entities.set(entity.id, { ...entity });
+    const oldEntity = newState.entities.get(entity.id);
+    newState.entities.set(entity.id, { ...oldEntity, ...entity });
     this.state = newState;
   }
 

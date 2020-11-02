@@ -6,6 +6,7 @@ import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { CancelGameDialogComponent } from 'src/app/cancel-game-dialog/cancel-game-dialog.component';
 import { GameStatus } from 'src/app/model/game-status';
 import { SpinnerOverlayService } from 'src/app/service/spinner-overlay.service';
+import { TaskSuccessDialogComponent } from 'src/app/task-success-dialog/task-success-dialog.component';
 import { GameFacade } from '../../state/game.facade';
 
 @Component({
@@ -29,9 +30,10 @@ export class TextFillGameHeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.levels = new Array(this.MAX_COUNT_LEVELS).fill(0).map((x, i) => i + 1);
-    this.activeGameStatus$ = this.gameFacade
-      .selectActiveGame()
-      .pipe(map((game) => game.status));
+    this.activeGameStatus$ = this.gameFacade.selectActiveGame().pipe(
+      filter((game) => !!game),
+      map((game) => game.status)
+    );
     this.textReadyToCheck$ = this.gameFacade.selectTextReadyToCheck();
   }
 
@@ -60,9 +62,19 @@ export class TextFillGameHeaderComponent implements OnInit {
 
   onCheckClick() {
     this.spinnerOverlayService.showSpinner();
-    this.gameFacade
-      .checkWords()
-      .subscribe(() => this.spinnerOverlayService.stopSpinner());
+    this.gameFacade.checkWords().subscribe((words) => {
+      if (words.length === 0) {
+        const diag = this.dialog.open(TaskSuccessDialogComponent);
+        diag.afterClosed().subscribe((result) => {
+          if (result === 'home') {
+            this.router.navigate(['home']);
+          } else {
+            this.router.navigate(['text']);
+          }
+        });
+      }
+      this.spinnerOverlayService.stopSpinner();
+    });
   }
 
   onCancelClick() {
