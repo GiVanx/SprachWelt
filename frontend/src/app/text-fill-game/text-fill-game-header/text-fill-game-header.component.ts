@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { CancelGameDialogComponent } from 'src/app/cancel-game-dialog/cancel-game-dialog.component';
 import { GameStatus } from 'src/app/model/game-status';
@@ -67,11 +67,13 @@ export class TextFillGameHeaderComponent implements OnInit {
       if (words.filter((w) => w.status !== WordStatus.OK).length === 0) {
         const diag = this.dialog.open(TaskSuccessDialogComponent);
         diag.afterClosed().subscribe((result) => {
+          let redirectRoute;
           if (result === 'home') {
-            this.router.navigate(['home']);
+            redirectRoute = '/home';
           } else {
-            this.router.navigate(['text']);
+            redirectRoute = '/text';
           }
+          this.cancel(of(true), redirectRoute).subscribe();
         });
       }
       this.spinnerOverlayService.stopSpinner();
@@ -80,16 +82,17 @@ export class TextFillGameHeaderComponent implements OnInit {
 
   onCancelClick() {
     let ref = this.dialog.open(CancelGameDialogComponent);
-    ref
-      .afterClosed()
-      .pipe(
-        filter((cancelGame) => cancelGame),
-        take(1),
-        tap(() => this.spinnerOverlayService.showSpinner()),
-        switchMap(() => this.gameFacade.cancelGameRequest()),
-        tap(() => this.router.navigate(['/text'])),
-        tap(() => this.spinnerOverlayService.stopSpinner())
-      )
-      .subscribe();
+    this.cancel(ref.afterClosed(), '/text').subscribe();
+  }
+
+  cancel(cancel: Observable<boolean>, redirectRoute: string) {
+    return cancel.pipe(
+      filter((cancelGame) => cancelGame),
+      take(1),
+      tap(() => this.spinnerOverlayService.showSpinner()),
+      switchMap(() => this.gameFacade.cancelGameRequest()),
+      tap(() => this.router.navigate([redirectRoute])),
+      tap(() => this.spinnerOverlayService.stopSpinner())
+    );
   }
 }
