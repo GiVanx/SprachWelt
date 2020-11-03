@@ -16,8 +16,8 @@ import { GameFacade } from '../../state/game.facade';
   styleUrls: ['./text-fill-game-header.component.less'],
 })
 export class TextFillGameHeaderComponent implements OnInit {
-  MAX_COUNT_LEVELS = 10;
-  selectedLevel = 2;
+  MAX_COUNT_LEVELS = 5;
+  selectedLevel = 1;
   levels: number[];
   activeGameStatus$: Observable<GameStatus>;
   textReadyToCheck$: Observable<boolean>;
