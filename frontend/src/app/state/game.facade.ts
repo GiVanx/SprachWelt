@@ -1,29 +1,46 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, pipe } from 'rxjs';
-import { GameState, initialWordState } from './game.state';
-import { delay, map, tap } from 'rxjs/operators';
-import { GameService } from '../service/game.service';
-import { WordStatus } from '../model/word-status';
-import { Word } from '../model/word';
-import { WordUtils } from '../model/word-utils';
-import { LeakyTextGame } from '../model/text-with-gaps';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
+import { LeakyTextGame } from '../model/leaky-text-game.model';
+import { WordStatus } from '../model/word-status';
+import { Word } from '../model/word.model';
+import { GameService } from '../service/game.service';
+import { GameStatusView } from '../view/game-status.view';
+import { LeakyTextGameView } from '../view/leaky-text-game.view';
+import { GameState, initialGameState } from './game.state';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameFacade {
   private gameState: BehaviorSubject<GameState> = new BehaviorSubject(
-    initialWordState
+    initialGameState
   );
-  private requestInProgress: BehaviorSubject<Boolean> = new BehaviorSubject(
+  private requestInProgress: BehaviorSubject<boolean> = new BehaviorSubject(
     false
   );
 
-  constructor(private wordService: GameService, private wordUtils: WordUtils) {}
+  constructor(private gameService: GameService) {}
+
+  selectActiveGameRequestSentAtLeastOnce(): Observable<boolean> {
+    return this.gameState
+      .asObservable()
+      .pipe(map((gameState) => gameState.activeGameSentAtLeastOnce));
+  }
+
+  selectActiveGame(): Observable<LeakyTextGame> {
+    return this.gameState
+      .asObservable()
+      .pipe(
+        map((gameState) => gameState.game.selectById(gameState.activeGameId))
+      );
+  }
 
   selectActiveGameId() {
-    return this.gameState.asObservable().pipe(map((game) => game.gameId));
+    return this.gameState
+      .asObservable()
+      .pipe(map((gameState) => gameState.activeGameId));
   }
 
   selectRequestInProgress() {
@@ -70,24 +87,21 @@ export class GameFacade {
   moveWordFromTextGapToMissingWords(word: Word) {
     let state = this.gameState.getValue();
 
-    console.log('moveWordFromTextGapToMissingWords', 'word', word);
-
     const newTextGap = {
       ...word,
       id: uuidv4(),
       status: WordStatus.MISSING,
     };
-    console.log(
-      'moveWordFromTextGapToMissingWords',
-      'new text gap',
-      newTextGap
-    );
     state.textWithGaps.replace(word.id, newTextGap);
 
-    state.missingWords.add({
+    state.missingWords.upsert({
       ...word,
       status: WordStatus.IDLE,
     });
+
+    state.wordsToBeEvaluated = state.wordsToBeEvaluated.filter(
+      (id) => id !== word.id
+    );
 
     this.gameState.next(state);
     return newTextGap;
@@ -103,42 +117,90 @@ export class GameFacade {
     });
 
     state.missingWords.delete(missingWord);
+    state.wordsToBeEvaluated.push(missingWord.id);
 
     this.gameState.next(state);
   }
 
   createGameRequest(text: string) {
-    this.wordService.create(text).subscribe((response) => {
-      console.log('server response', response);
-      this.updateState(response);
-    });
-  }
-
-  getActiveGameRequest() {
     this.requestInProgress.next(true);
-    return this.wordService.getActiveGame().pipe(
+
+    const createGame$ = this.gameService.create(text).pipe(
       tap((response) => {
         this.updateState(response);
         this.requestInProgress.next(false);
       }),
-      delay(500)
+      shareReplay()
     );
+
+    createGame$.subscribe();
+
+    return createGame$;
+  }
+
+  getActiveGameRequest() {
+    this.requestInProgress.next(true);
+
+    const activeGame$ = this.gameService.getActiveGame().pipe(
+      tap((response) => {
+        console.log('GameFacade:getActiveGameRequest(): ' + response);
+        this.updateState(response);
+        this.requestInProgress.next(false);
+      }),
+      shareReplay()
+    );
+
+    activeGame$.subscribe();
+
+    return activeGame$;
   }
 
   startGameRequest() {
-    this.wordService
-      .startGame(this.gameState.value.gameId)
-      .subscribe((response) => {
-        this.updateState(response);
-      });
+    this.requestInProgress.next(true);
+    const startGame$ = this.gameService
+      .startGame(this.gameState.getValue().activeGameId)
+      .pipe(
+        tap((response) => {
+          this.updateGameStatus(response);
+          this.requestInProgress.next(false);
+        }),
+        shareReplay()
+      );
+
+    startGame$.subscribe();
+    return startGame$;
+  }
+
+  remixGameRequest(level) {
+    this.requestInProgress.next(true);
+    const remixGame$ = this.gameService
+      .remix(this.gameState.getValue().activeGameId, level)
+      .pipe(
+        tap((response) => {
+          this.updateState(response);
+          this.requestInProgress.next(false);
+        }),
+        shareReplay()
+      );
+
+    remixGame$.subscribe();
+    return remixGame$;
   }
 
   cancelGameRequest() {
-    this.wordService
-      .cancel(this.gameState.value.gameId)
-      .subscribe((response) => {
-        // TODO: clear state
-      });
+    this.requestInProgress.next(true);
+    const cancelGame$ = this.gameService
+      .cancel(this.gameState.getValue().activeGameId)
+      .pipe(
+        tap(() => {
+          this.updateState(null);
+          this.requestInProgress.next(false);
+        }),
+        shareReplay()
+      );
+
+    cancelGame$.subscribe();
+    return cancelGame$;
   }
 
   checkWords() {
@@ -151,55 +213,92 @@ export class GameFacade {
       textGapWordEntities.get(wordId)
     );
 
-    console.log('WORDS TO CHECK', wordsToCheck);
+    const checkWords$ = this.gameService
+      .checkWords(state.activeGameId, wordsToCheck)
+      .pipe(shareReplay());
 
-    this.wordService
-      .checkWords(state.gameId, wordsToCheck)
-      .subscribe((evaluatedWords: Word[]) => {
-        console.log('CHECKED WORDS', evaluatedWords);
-        const state = this.gameState.getValue();
+    checkWords$.subscribe((evaluatedWords: Word[]) => {
+      const state = this.gameState.getValue();
 
-        for (let word of evaluatedWords) {
-          state.textWithGaps.replace(word.id, word);
-        }
+      for (let word of evaluatedWords) {
+        state.textWithGaps.replace(word.id, word);
+      }
 
-        console.log('final', state);
-        this.gameState.next(state);
-      });
+      this.gameState.next(state);
+    });
+
+    return checkWords$;
   }
 
   private getTextWithGaps(words: Word[]): Word[] {
     const result: Word[] = [];
     let i = 0;
-    let j = i + 1;
-    while (i < words.length && j < words.length) {
-      result.push(words[i]);
-      let position = words[i].position + 1;
-      while (position < words[j].position) {
+    let position = 0;
+
+    do {
+      while (position < words[i].position) {
         result.push(new Word(uuidv4(), null, position, WordStatus.MISSING));
         ++position;
       }
+      result.push(words[i]);
+      position = words[i].position + 1;
       ++i;
-      ++j;
-    }
+    } while (i < words.length);
     return result;
   }
 
-  private updateState(game: LeakyTextGame) {
+  private updateGameStatus(game: GameStatusView) {
+    let state = this.gameState.getValue();
+    state.game.upsert(game);
+    this.gameState.next(state);
+  }
+
+  private updateState(game: LeakyTextGameView) {
+    let state = this.gameState.getValue();
+    state.activeGameSentAtLeastOnce = true;
     if (game) {
-      let state = this.gameState.getValue();
+      state = this.updateTextWithGaps(game, state);
+      state = this.updateMissingWords(game, state);
+      state = this.updateGame(game, state);
+      state.activeGameId = game.id;
+    } else {
+      state.activeGameId = null;
+    }
+    this.gameState.next(state);
+  }
 
-      console.log('updateState: ', game.textWithGaps);
+  private updateGame(game: LeakyTextGameView, state: GameState) {
+    const gameEntity = state.game.selectById(game.id);
 
+    const missingWords = game.missingWords
+      ? game.missingWords.map((w) => w.id)
+      : gameEntity.missingWords;
+
+    const textWithGaps = game.textWithGaps
+      ? game.textWithGaps.map((w) => w.id)
+      : gameEntity.textWithGaps;
+
+    state.game.upsert({
+      ...game,
+      missingWords,
+      textWithGaps,
+    });
+    return state;
+  }
+
+  private updateTextWithGaps(game: LeakyTextGameView, state: GameState) {
+    if (game.textWithGaps) {
       const textWithGaps = this.getTextWithGaps(game.textWithGaps);
-      console.log('text with gaps', textWithGaps);
       state.textWithGaps.addAll(textWithGaps);
+    }
+    return state;
+  }
 
+  private updateMissingWords(game: LeakyTextGameView, state: GameState) {
+    if (game.missingWords) {
       state.totalCountWordsToBeEvaluated = game.missingWords.length;
       state.missingWords.addAll(game.missingWords);
-      state.gameId = game.id;
-
-      this.gameState.next(state);
     }
+    return state;
   }
 }

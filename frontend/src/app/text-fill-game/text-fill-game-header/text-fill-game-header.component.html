@@ -1,20 +1,55 @@
 <div fxLayout="row" fxLayoutAlign="center">
-  <div>
+  <div *ngIf="(activeGameStatus$ | async) === gameStatus().NOT_STARTED">
     <mat-button-toggle-group
+      #toggleButton
       name="difficultyLevel"
-      (change)="onDifficultyChange($event)"
+      (change)="selectedLevel = $event.value"
     >
-      <mat-button-toggle *ngFor="let level of levels" [checked]="level === 2">{{
-        level
-      }}</mat-button-toggle>
+      <mat-button-toggle
+        *ngFor="let level of levels"
+        [checked]="level === 1"
+        [value]="level"
+        >{{ level }}</mat-button-toggle
+      >
     </mat-button-toggle-group>
-    <button mat-raised-button color="primary">Remix</button>
+    <button
+      mat-raised-button
+      color="primary"
+      style="margin-left: 3px"
+      (click)="onRemix($event)"
+    >
+      Remix
+    </button>
   </div>
 
   <div style="margin-left: auto">
-    <button mat-raised-button color="primary" (click)="onCheckButtonClicked()">
-      Check
+    <button
+      mat-raised-button
+      color="primary"
+      *ngIf="(activeGameStatus$ | async) === gameStatus().NOT_STARTED"
+      (click)="onStartClick()"
+    >
+      Start
     </button>
-    <button mat-raised-button color="primary">Start</button>
+
+    <div *ngIf="(activeGameStatus$ | async) === gameStatus().STARTED">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onCheckClick()"
+        [disabled]="!(textReadyToCheck$ | async)"
+      >
+        Check
+      </button>
+
+      <button
+        mat-raised-button
+        color="warning"
+        (click)="onCancelClick()"
+        style="margin-left: 2px"
+      >
+        Cancel
+      </button>
+    </div>
   </div>
 </div>

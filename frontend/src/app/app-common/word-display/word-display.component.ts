@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Word } from '../../model/word';
+import { Word } from '../../model/word.model';
 import { WordStatus } from '../../model/word-status';
 
 @Component({
@@ -12,6 +12,7 @@ export class WordDisplayComponent implements OnInit {
   preventSingleClick: boolean;
 
   WORD_PLACEHOLDER = '?????';
+  @Input() disabled: boolean;
   @Input() words: Word[];
   selectedOptions: Word[] = [];
   @Output() onWordSingleClick: EventEmitter<number> = new EventEmitter();

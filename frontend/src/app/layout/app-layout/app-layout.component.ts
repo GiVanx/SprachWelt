@@ -5,10 +5,4 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './app-layout.component.html',
   styleUrls: ['./app-layout.component.less'],
 })
-export class AppLayoutComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {
-    console.log('app layout');
-  }
-}
+export class AppLayoutComponent {}

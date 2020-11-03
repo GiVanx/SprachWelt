@@ -1,8 +1,8 @@
 import { GameStatus } from '../model/game-status';
-import { LeakyTextGame } from '../model/text-with-gaps';
+import { LeakyTextGameView } from '../view/leaky-text-game.view';
 import { WordStatus } from '../model/word-status';
 
-export const leakyGameMock: LeakyTextGame = {
+export const leakyGameMock: LeakyTextGameView = {
   id: 59,
   status: GameStatus.NOT_STARTED,
   missingWords: [

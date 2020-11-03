@@ -2,10 +2,23 @@
   <app-text-fill-game-header></app-text-fill-game-header>
 
   <div fxLayout="row" fxFlex="1 1 0">
-    <app-text-with-gaps fxFlex="1.5 1 0"></app-text-with-gaps>
+    <app-word-display
+      [disabled]="(activeGame$ | async).status !== gameStatus().STARTED"
+      #textWithGapsDisplay
+      fxFlex="1.5 1 0"
+      (onWordSingleClick)="onGapSingleClick($event)"
+      (onWordDoubleClick)="onGapDoubleClick($event)"
+      [words]="textWithGaps$ | async"
+    ></app-word-display>
 
     <mat-divider [vertical]="true"></mat-divider>
 
-    <app-missing-words fxFlex="1 1 0"></app-missing-words>
+    <app-word-display
+      [disabled]="(activeGame$ | async).status !== gameStatus().STARTED"
+      #missingWordsDisplay
+      fxFlex="1 1 0"
+      (onWordSingleClick)="onMissingWordSingleClick($event)"
+      [words]="missingWords$ | async"
+    ></app-word-display>
   </div>
 </div>

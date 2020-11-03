@@ -1,17 +1,23 @@
-import { WordStateReducer } from './word.reducer';
+import { LeakyTextGame } from '../model/leaky-text-game.model';
+import { Word } from '../model/word.model';
+import { StateReducer } from './state.reducer';
 
 export interface GameState {
-  gameId: number;
-  missingWords: WordStateReducer;
-  textWithGaps: WordStateReducer;
+  game: StateReducer<LeakyTextGame>;
+  missingWords: StateReducer<Word>;
+  textWithGaps: StateReducer<Word>;
   wordsToBeEvaluated: number[];
   totalCountWordsToBeEvaluated: number;
+  activeGameId: number;
+  activeGameSentAtLeastOnce: boolean;
 }
 
-export const initialWordState: GameState = {
-  gameId: null,
-  missingWords: new WordStateReducer(),
-  textWithGaps: new WordStateReducer(),
+export const initialGameState: GameState = {
+  game: new StateReducer(),
+  missingWords: new StateReducer(),
+  textWithGaps: new StateReducer(),
   wordsToBeEvaluated: [],
   totalCountWordsToBeEvaluated: 0,
+  activeGameId: null,
+  activeGameSentAtLeastOnce: false,
 };

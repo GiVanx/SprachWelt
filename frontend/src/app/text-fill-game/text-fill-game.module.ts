@@ -1,17 +1,16 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TextFillGameComponent } from './text-fill-game.component';
-import { MissingWordsComponent } from './missing-words/missing-words.component';
-import { TextFillGameHeaderComponent } from './text-fill-game-header/text-fill-game-header.component';
-import { TextWithGapsComponent } from './text-with-gaps/text-with-gaps.component';
-import { Routes, RouterModule } from '@angular/router';
-import { AppCommonModule } from '../app-common/app-common.module';
-import { MatDividerModule } from '@angular/material/divider';
-import { LayoutModule } from '../layout/layout.module';
-import { AppLayoutComponent } from '../layout/app-layout/app-layout.component';
+import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouterModule, Routes } from '@angular/router';
+import { AppCommonModule } from '../app-common/app-common.module';
+import { AppLayoutComponent } from '../layout/app-layout/app-layout.component';
+import { LayoutModule } from '../layout/layout.module';
+import { TextFillGameHeaderComponent } from './text-fill-game-header/text-fill-game-header.component';
+import { TextFillGameComponent } from './text-fill-game.component';
 
 const routes: Routes = [
   {
@@ -27,12 +26,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [
-    MissingWordsComponent,
-    TextFillGameHeaderComponent,
-    TextWithGapsComponent,
-    TextFillGameComponent,
-  ],
+  declarations: [TextFillGameHeaderComponent, TextFillGameComponent],
   imports: [
     MatButtonModule,
     MatButtonToggleModule,
@@ -42,6 +36,7 @@ const routes: Routes = [
     AppCommonModule,
     LayoutModule,
     FlexLayoutModule,
+    MatProgressSpinnerModule,
   ],
   exports: [TextFillGameComponent],
 })

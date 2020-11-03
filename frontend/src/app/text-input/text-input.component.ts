@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { NewGameDialogComponent } from '../new-game-dialog/new-game-dialog.component';
 import { NotificationService } from '../service/notification.service';
+import { SpinnerOverlayService } from '../service/spinner-overlay.service';
 import { GameFacade } from '../state/game.facade';
 
 @Component({
@@ -23,7 +24,7 @@ export class TextInputComponent implements OnInit, AfterViewInit, OnDestroy {
   text: string = '';
   @ViewChild('f') form: NgForm;
   private errorMessageId: string;
-  private MIN_NUMBER_TEXT_WORDS: number = 20;
+  private MIN_NUMBER_TEXT_WORDS: number = 10;
   private statusChangesSubscription: Subscription;
   private valueChangesSubscription: Subscription;
 
@@ -31,7 +32,8 @@ export class TextInputComponent implements OnInit, AfterViewInit, OnDestroy {
     private gameFacade: GameFacade,
     private router: Router,
     private dialog: MatDialog,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private spinnerOverlayService: SpinnerOverlayService
   ) {}
 
   ngOnInit(): void {
@@ -40,9 +42,25 @@ export class TextInputComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(first())
       .subscribe((id) => {
         if (id) {
-          this.dialog.open(NewGameDialogComponent);
+          const diag = this.dialog.open(NewGameDialogComponent, {
+            disableClose: true,
+          });
+          diag.afterClosed().subscribe((result) => {
+            if (result) {
+              this.cancelActiveGame();
+            } else {
+              this.router.navigate(['text-fill']);
+            }
+          });
         }
       });
+  }
+
+  cancelActiveGame() {
+    this.spinnerOverlayService.showSpinner();
+    this.gameFacade.cancelGameRequest().subscribe((result) => {
+      this.spinnerOverlayService.stopSpinner();
+    });
   }
 
   ngAfterViewInit(): void {
@@ -64,11 +82,12 @@ export class TextInputComponent implements OnInit, AfterViewInit, OnDestroy {
   onDialogYesClick() {}
 
   onPlay() {
-    // TODO: change this length logic
-    if (this.text.length > 0) {
-      this.gameFacade.createGameRequest(this.text);
+    this.spinnerOverlayService.showSpinner();
+    this.gameFacade.createGameRequest(this.text).subscribe(() => {
+      this.spinnerOverlayService.stopSpinner();
+      console.log('navigate');
       this.router.navigate(['/text-fill']);
-    }
+    });
   }
 
   private addStatusChangesListener() {

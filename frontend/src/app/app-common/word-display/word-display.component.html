@@ -9,12 +9,14 @@
     [value]="word"
     (dblclick)="onDoubleClick(word)"
     [disabled]="
+      disabled ||
       word.status === getWordStatusEnum().ORIGINAL ||
       word.status === getWordStatusEnum().OK
     "
     [class.list-item-active]="
       selectedOptions.length > 0 && selectedOptions[0].id === word.id
     "
+    [class.missing]="word.status === getWordStatusEnum().MISSING"
     [class.to-be-evaluated]="
       word.status === getWordStatusEnum().TO_BE_EVALUATED
     "

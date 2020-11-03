@@ -16,6 +16,7 @@ import { LoginProvider } from './login-provider.service';
 })
 export class AuthService {
   private userState: BehaviorSubject<User> = new BehaviorSubject(null);
+  private SERVER_URL = environment.serverUrl;
 
   ID_TOKEN_HEADER_KEY = 'idToken';
   JWT_TOKEN = 'jwtToken';
@@ -67,7 +68,7 @@ export class AuthService {
 
   refreshToken() {
     return this.httpClient
-      .post<Tokens>(environment.refreshTokenEndpoint, {})
+      .post<Tokens>(`${this.SERVER_URL}/login/refresh-token`, {})
       .pipe(
         tap((tokens) => this.saveToken(tokens)),
         tap((_) => this.startRefreshTokenTimer()),
@@ -102,7 +103,7 @@ export class AuthService {
 
   getEndpoint(loginProviderId: string) {
     if (loginProviderId === GoogleLoginProviderService.ID) {
-      return environment.googleLoginEndpoint;
+      return `${this.SERVER_URL}/login/google`;
     }
   }
 

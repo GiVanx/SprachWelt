@@ -19,7 +19,7 @@ public class GameService {
 
     /**
      * @param text
-     * @param level an integer number from 1 to 10.
+     * @param level an integer number from 1 to 5.
      * @return
      */
     public Game create(Text text, int level) {
@@ -28,7 +28,7 @@ public class GameService {
         LinkedHashSet<Word> missingWords = new LinkedHashSet<>();
         Random random = new Random();
 
-        int wordPresenceProbability = (level + 3) * 10;
+        int wordPresenceProbability = (5 + level) * 10;
 
         int i = 0;
         for (Word word : text.getWords()) {
