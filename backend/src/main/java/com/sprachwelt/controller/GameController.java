@@ -77,11 +77,7 @@ public class GameController {
 
     @PostMapping("{id}/check")
     public List<WordView> checkWords(@PathVariable("id") Long gameId, @RequestBody List<WordView> words) {
-        List<WordView> checkedWords = gameFacade.check(gameId, words);
-        if (checkedWords.size() == 0) {
-            gameFacade.cancel(gameId);
-        }
-        return checkedWords;
+        return gameFacade.check(gameId, words);
     }
 
     @PutMapping("{id}/cancel")
