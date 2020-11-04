@@ -1,6 +1,7 @@
 package com.sprachwelt.controller;
 
 import com.sprachwelt.auth.model.User;
+import com.sprachwelt.exception.GameAlreadyExistsException;
 import com.sprachwelt.model.Game;
 import com.sprachwelt.model.Text;
 import com.sprachwelt.facade.GameFacade;
@@ -43,6 +44,11 @@ public class GameController {
 
     @PostMapping
     public GameView createGame(@RequestBody String textString) {
+
+        Game activeGame = this.userFacade.getActiveUser().getGame();
+        if (activeGame != null) {
+            throw new GameAlreadyExistsException();
+        }
 
         Text text = textFacade.tokenize(textString);
 
