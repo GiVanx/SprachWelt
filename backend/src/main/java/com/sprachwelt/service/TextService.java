@@ -4,7 +4,9 @@ import com.sprachwelt.model.Text;
 import com.sprachwelt.model.Word;
 import com.sprachwelt.model.WordStatus;
 import com.sprachwelt.facade.TextRepositoryFacade;
+import com.sprachwelt.model.WordType;
 import com.sprachwelt.view.WordView;
+import opennlp.tools.tokenize.SimpleTokenizer;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,35 +61,22 @@ public class TextService {
 
     private List<Word> getTextWords(String text) {
 
-        List<Word> words = new ArrayList<>();
-        String pattern = "[a-zA-Z0-9\\-äöüÄÖÜß]";
+        List<Word> textWords = new ArrayList<>();
+        SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
 
-        StringBuffer currentWord = new StringBuffer();
-        int wordPosition = 0;
-        Word word;
-        for (char c : text.toCharArray()) {
+        String words[] = tokenizer.tokenize(text);
 
-            if (Character.toString(c).matches(pattern)) {
-                currentWord.append(c);
-            } else {
-                if (currentWord.length() != 0) {
-                    word = Word.builder().content(currentWord.toString()).position(wordPosition++).build();
-                    words.add(word);
-                    currentWord = new StringBuffer();
-                }
-
-                if (c != 32) {
-                    System.out.println("-" + (int) c + "-" + wordPosition);
-                    word = Word.builder().content(Character.toString(c)).position(wordPosition++).build();
-                    words.add(word);
-                }
-            }
+        for (int i = 0; i < words.length; ++i) {
+            Word word = Word.builder().content(words[i]).position(i).type(getType(words[i])).build();
+            textWords.add(word);
         }
+        return textWords;
+    }
 
-        if (currentWord.length() != 0) {
-            word = Word.builder().content(currentWord.toString()).position(wordPosition++).build();
-            words.add(word);
+    private WordType getType(String word) {
+        if (word.length() == 1 && !Character.isLetter(word.charAt(0))) {
+            return WordType.SPECIAL;
         }
-        return words;
+        return WordType.WORD;
     }
 }
