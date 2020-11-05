@@ -1,5 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatButtonModule } from '@angular/material/button';
 import { LoginComponent } from './login.component';
 import { AuthServiceConfig } from './service/auth-service.config';
 import { AuthService } from './service/auth.service';
@@ -23,6 +25,6 @@ const authConfig = () =>
       useFactory: authConfig,
     },
   ],
-  imports: [HttpClientModule],
+  imports: [HttpClientModule, MatButtonModule, FlexLayoutModule],
 })
 export class LoginModule {}

@@ -1,3 +1,27 @@
-<button mat-raised-button (click)="authenticate('google')" color="primary">
-  Google
-</button>
+<div
+  fxLayout="row"
+  style="width: 100%; height: 100%"
+  fxLayoutAlign="center start"
+>
+  <div id="gSignInWrapper" fxLayout="column">
+    <h1 class="label">Sign in with your account:</h1>
+    <div
+      id="customBtn"
+      fxLayout="row"
+      fxLayoutAlign="start start"
+      class="customGPlusSignIn"
+      (click)="authenticate('google')"
+    >
+      <div class="icon"></div>
+      <div
+        class="buttonText"
+        fxFlex="1 1 auto"
+        flexLayout="column"
+        fxLayoutAlign="start center"
+      >
+        <span>Sign-in with Google</span>
+      </div>
+    </div>
+  </div>
+  <div id="name"></div>
+</div>
