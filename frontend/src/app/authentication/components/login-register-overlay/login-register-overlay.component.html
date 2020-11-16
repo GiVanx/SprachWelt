@@ -4,7 +4,7 @@
   fxLayoutAlign="center start"
 >
   <div id="gSignInWrapper" fxLayout="column">
-    <h1 class="label">Sign in with your account:</h1>
+    <h1 class="label">{{ headerLabel }} with your account:</h1>
     <div
       id="customBtn"
       fxLayout="row"
@@ -19,9 +19,20 @@
         flexLayout="column"
         fxLayoutAlign="start center"
       >
-        <span>Sign-in with Google</span>
+        <span>{{ headerLabel }} with Google</span>
       </div>
     </div>
+    <a
+      *ngIf="config.showNoAccountYet"
+      class="accountQuestion"
+      (click)="onNoAccountYetClick()"
+      >Don't have an account yet?</a
+    >
+    <a
+      *ngIf="config.showAlreadyHaveAnAccount"
+      class="accountQuestion"
+      (click)="onAlreadyHaveAnAccount()"
+      >Already have an account?</a
+    >
   </div>
-  <div id="name"></div>
 </div>

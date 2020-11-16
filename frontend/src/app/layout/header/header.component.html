@@ -4,14 +4,24 @@
   <span style="margin-right: 10px" *ngIf="user$ | async"
     >Welcome, {{ (user$ | async).name }}!</span
   >
-  <button
-    mat-raised-button
-    *ngIf="!(user$ | async)"
-    color="primary"
-    (click)="login()"
-  >
-    Login
-  </button>
+  <ng-container *ngIf="!(user$ | async)">
+    <button
+      mat-raised-button
+      *ngIf="!(user$ | async)"
+      color="primary"
+      (click)="login()"
+    >
+      Login
+    </button>
+    <button
+      mat-raised-button
+      *ngIf="!(user$ | async)"
+      color="primary"
+      (click)="register()"
+    >
+      Register
+    </button>
+  </ng-container>
   <button
     mat-raised-button
     *ngIf="user$ | async"

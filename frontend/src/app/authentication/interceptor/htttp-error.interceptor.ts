@@ -18,7 +18,6 @@ export class HttpErrorInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       catchError((err) => {
         if ([401, 403].includes(err.status)) {
-          this.router.navigate(['home']);
           return EMPTY;
         }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { first, switchMap, tap } from 'rxjs/operators';
-import { AuthService } from '../login/service/auth.service';
+import { AuthService } from '../authentication/service/auth.service';
 import { SpinnerOverlayService } from '../service/spinner-overlay.service';
 import { GameFacade } from '../state/game.facade';
 
