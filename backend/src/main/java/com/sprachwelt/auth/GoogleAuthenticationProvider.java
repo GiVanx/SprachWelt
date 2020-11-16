@@ -68,7 +68,6 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
         if (user == null) {
             user = User.builder().email(idTokenPayload.getEmail())
                     .name(get(idTokenPayload, GIVEN_NAME)).picture(get(idTokenPayload, PICTURE)).build();
-            user = userRepository.save(user);
         }
         return new CustomAuthenticationToken(user);
     }

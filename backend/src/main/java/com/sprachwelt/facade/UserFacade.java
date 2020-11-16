@@ -13,6 +13,10 @@ public class UserFacade {
     @Autowired
     private UserRepository userRepository;
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public User getActiveUser() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return this.userRepository.getOne(user.getId());

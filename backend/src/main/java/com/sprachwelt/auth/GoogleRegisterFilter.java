@@ -1,7 +1,5 @@
 package com.sprachwelt.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sprachwelt.auth.dto.TokensDto;
 import com.sprachwelt.auth.model.GoogleAuthenticationIdToken;
 import com.sprachwelt.auth.model.User;
 import com.sprachwelt.auth.repository.UserRepository;
@@ -19,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class GoogleRegisterFilter extends AbstractAuthenticationProcessingFilter {
 
     @Autowired
     private UserRepository userRepository;
@@ -33,23 +31,29 @@ public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessing
         super.setAuthenticationManager(authenticationManager);
     }
 
-    public GoogleAuthenticationFilter(String defaultFilterProcessesUrl) {
+    public GoogleRegisterFilter(String defaultFilterProcessesUrl) {
         super(defaultFilterProcessesUrl);
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 
-        System.out.println("GoogleAuthFilter: Attempt authentication");
-
         String idTokenString = request.getHeader("idToken");
 
-        Authentication authToken = null;
+        System.out.println("GoogleRegisterFilter: Attempt authentication. ID token: " + idTokenString);
+
+        Authentication authToken;
 
         if (idTokenString != null) {
             authToken = getAuthenticationManager().authenticate(new GoogleAuthenticationIdToken(null, idTokenString));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+        } else {
+            System.out.println("'idToken' not found. Setting dummy user.");
+            // used only for testing
+            authToken = new CustomAuthenticationToken(createDummy());
+            authToken.setAuthenticated(true);
         }
+
+        SecurityContextHolder.getContext().setAuthentication(authToken);
         System.out.println("SecurityContext is now set!");
         return authToken;
     }
@@ -57,5 +61,18 @@ public class GoogleAuthenticationFilter extends AbstractAuthenticationProcessing
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         chain.doFilter(request, response);
+    }
+
+
+    private User createDummy() {
+
+        User user = userRepository.findByEmail("peter.pan@gmail.com");
+
+        if (user == null) {
+            user = User.builder().name("Peter Pan")
+                    .email("peter.pan@gmail.com").build();
+            return userRepository.save(user);
+        }
+        return user;
     }
 }

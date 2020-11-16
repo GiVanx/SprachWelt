@@ -1,13 +1,11 @@
 package com.sprachwelt.conf;
 
-import com.sprachwelt.auth.GoogleAuthenticationFilter;
-import com.sprachwelt.auth.GoogleAuthenticationProvider;
-import com.sprachwelt.auth.JwtAuthenticationFilter;
-import com.sprachwelt.auth.JwtAuthenticationProvider;
+import com.sprachwelt.auth.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         System.out.println("Security configuration!!!");
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/login/google").permitAll()
+                .antMatchers("/login/google", "/register/google").permitAll()
                 .and().authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
@@ -36,7 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/logout")
                 .and()
                 .addFilterBefore(googleAuthenticationFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter(), GoogleAuthenticationFilter.class);
+                .addFilterBefore(googleRegisterFilter(), GoogleAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), GoogleRegisterFilter.class);
     }
 
     @Autowired
@@ -66,6 +65,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public GoogleAuthenticationFilter googleAuthenticationFilter() {
         return new GoogleAuthenticationFilter("/login/google");
+    }
+
+    @Bean
+    public GoogleRegisterFilter googleRegisterFilter() {
+        return new GoogleRegisterFilter("/register/google");
     }
 
     @Bean
