@@ -18,7 +18,7 @@ import java.util.Collections;
 
 public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
-    private final static String NAME = "name";
+    private final static String GIVEN_NAME = "given_name";
     private final static String PICTURE = "picture";
 
     @Autowired
@@ -62,11 +62,12 @@ public class GoogleAuthenticationProvider implements AuthenticationProvider {
 
     private CustomAuthenticationToken getToken(GoogleIdToken.Payload idTokenPayload) {
 
+        System.out.println("Id token payload " + idTokenPayload);
+
         User user = userRepository.findByEmail(idTokenPayload.getEmail());
         if (user == null) {
             user = User.builder().email(idTokenPayload.getEmail())
-                    .name(get(idTokenPayload, NAME)).picture(get(idTokenPayload, PICTURE)).build();
-            user = userRepository.save(user);
+                    .name(get(idTokenPayload, GIVEN_NAME)).picture(get(idTokenPayload, PICTURE)).build();
         }
         return new CustomAuthenticationToken(user);
     }

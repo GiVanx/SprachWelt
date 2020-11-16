@@ -20,9 +20,13 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationStart) {
-        this.isLoading = true;
+        setTimeout(() => {
+          this.isLoading = true;
+        });
       } else if (event instanceof NavigationEnd) {
-        this.isLoading = false;
+        setTimeout(() => {
+          this.isLoading = false;
+        });
       }
     });
   }

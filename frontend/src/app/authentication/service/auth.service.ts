@@ -11,15 +11,53 @@ import { AuthServiceConfig } from './auth-service.config';
 import { GoogleLoginProviderService } from './google-login.provider';
 import { LoginProvider } from './login-provider.service';
 
+abstract class Action {
+  ID_TOKEN_HEADER_KEY = 'idToken';
+  SERVER_URL = environment.serverUrl;
+
+  constructor(private httpClient: HttpClient) {}
+
+  abstract getEndpoint(loginProviderId): string;
+
+  execute(idToken, loginProviderId): Observable<Tokens> {
+    const loginEndpoint = this.getEndpoint(loginProviderId);
+    return this.sendRequest(idToken, loginEndpoint);
+  }
+
+  private sendRequest(idToken, endpoint) {
+    let headers = new HttpHeaders();
+    headers = headers.set(this.ID_TOKEN_HEADER_KEY, idToken);
+
+    return this.httpClient.post<Tokens>(endpoint, null, {
+      headers,
+    });
+  }
+}
+
+class LoginAction extends Action {
+  getEndpoint(loginProviderId): string {
+    if (loginProviderId === GoogleLoginProviderService.ID) {
+      return `${this.SERVER_URL}/login/google`;
+    }
+  }
+}
+
+class RegisterAction extends Action {
+  getEndpoint(loginProviderId): string {
+    if (loginProviderId === GoogleLoginProviderService.ID) {
+      return `${this.SERVER_URL}/register/google`;
+    }
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private userState: BehaviorSubject<User> = new BehaviorSubject(null);
-  private SERVER_URL = environment.serverUrl;
 
-  ID_TOKEN_HEADER_KEY = 'idToken';
   JWT_TOKEN = 'jwtToken';
+  SERVER_URL = environment.serverUrl;
   private jwtService: JwtHelperService;
 
   constructor(
@@ -33,31 +71,25 @@ export class AuthService {
     return this.userState.asObservable();
   }
 
-  authenticate(loginProviderId) {
+  login(loginProviderId) {
+    return this.process(new LoginAction(this.httpClient), loginProviderId);
+  }
+
+  register(loginProviderId) {
+    return this.process(new RegisterAction(this.httpClient), loginProviderId);
+  }
+
+  process(action: LoginAction | RegisterAction, loginProviderId) {
     const loginProvider: LoginProvider = this.authConfig.getProvider(
       loginProviderId
     );
 
     return from(loginProvider.authenticate()).pipe(
-      switchMap((idToken) => {
-        console.log('ID token: ', idToken);
-        return this.authenticateAppServer(idToken, loginProviderId);
-      }),
+      switchMap((idToken) => action.execute(idToken, loginProviderId)),
       tap((tokens) => this.saveToken(tokens)),
       map((_) => this.loadUser()),
       tap(() => this.startRefreshTokenTimer())
     );
-  }
-
-  authenticateAppServer(idToken, loginProviderId): Observable<Tokens> {
-    const loginEndpoint = this.getEndpoint(loginProviderId);
-
-    let headers = new HttpHeaders();
-    headers = headers.set(this.ID_TOKEN_HEADER_KEY, idToken);
-
-    return this.httpClient.post<Tokens>(loginEndpoint, null, {
-      headers,
-    });
   }
 
   logout() {
@@ -68,7 +100,7 @@ export class AuthService {
 
   refreshToken() {
     return this.httpClient
-      .post<Tokens>(`${this.SERVER_URL}/login/refresh-token`, {})
+      .post<Tokens>(`${this.SERVER_URL}/refresh-token`, {})
       .pipe(
         tap((tokens) => this.saveToken(tokens)),
         tap((_) => this.startRefreshTokenTimer()),
@@ -99,12 +131,6 @@ export class AuthService {
 
   getDecodedToken(): JwtToken {
     return this.jwtService.decodeToken(this.getToken());
-  }
-
-  getEndpoint(loginProviderId: string) {
-    if (loginProviderId === GoogleLoginProviderService.ID) {
-      return `${this.SERVER_URL}/login/google`;
-    }
   }
 
   private refreshTokenTimeout;

@@ -26,4 +26,6 @@ public class Word {
     private Integer position;
 
     private WordStatus status;
+
+    private WordType type;
 }

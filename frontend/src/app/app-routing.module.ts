@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { TextInputComponent } from './text-input/text-input.component';
-import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
-import { LoginComponent } from './login/login.component';
-import { AuthGuardService } from './login/guard/auth-guard.service';
-import { HomeComponent } from './home/home.component';
+import { RouterModule, Routes } from '@angular/router';
 import { ActiveGameResolverService } from './active-game-resolver.service';
+import { AuthGuardService } from './authentication/guard/auth-guard.service';
+import { HomeComponent } from './home/home.component';
+import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
+import { TextInputComponent } from './text-input/text-input.component';
 
 // TODO: add page not found route
 const routes: Routes = [
@@ -16,15 +15,15 @@ const routes: Routes = [
       {
         path: '',
         component: HomeComponent,
-        resolve: {
-          activeGame: ActiveGameResolverService,
-        },
       },
     ],
   },
   {
-    path: 'login',
-    component: LoginComponent,
+    path: 'auth',
+    loadChildren: () =>
+      import('./authentication/authentication.module').then(
+        (m) => m.AuthenticationModule
+      ),
   },
   {
     path: 'text',

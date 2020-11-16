@@ -11,10 +11,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { LayoutModule } from './layout/layout.module';
-import { HttpErrorInterceptor } from './login/interceptor/htttp-error.interceptor';
-import { JwtInterceptor } from './login/interceptor/jwt.interceptor';
-import { LoginModule } from './login/login.module';
-import { AuthService } from './login/service/auth.service';
 import { TextEditComponent } from './text-edit/text-edit.component';
 import { TextFillGameModule } from './text-fill-game/text-fill-game.module';
 import { TextInputHeaderComponent } from './text-input-header/text-input-header.component';
@@ -25,6 +21,10 @@ import { GlobalErrorHandler } from './service/global-error.handler';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CancelGameDialogComponent } from './cancel-game-dialog/cancel-game-dialog.component';
 import { TaskSuccessDialogComponent } from './task-success-dialog/task-success-dialog.component';
+import { AuthService } from './authentication/service/auth.service';
+import { AuthenticationModule } from './authentication/authentication.module';
+import { HttpErrorInterceptor } from './authentication/interceptor/htttp-error.interceptor';
+import { JwtInterceptor } from './authentication/interceptor/jwt.interceptor';
 
 export function appInitializer(authService: AuthService) {
   return () =>
@@ -56,8 +56,8 @@ export function appInitializer(authService: AuthService) {
     HttpClientModule,
     TextFillGameModule,
     LayoutModule,
-    LoginModule,
     FlexLayoutModule,
+    AuthenticationModule,
     MatSnackBarModule,
   ],
   providers: [

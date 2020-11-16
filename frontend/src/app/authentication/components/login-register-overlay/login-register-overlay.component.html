@@ -1,0 +1,38 @@
+<div
+  fxLayout="row"
+  style="width: 100%; height: 100%"
+  fxLayoutAlign="center start"
+>
+  <div id="gSignInWrapper" fxLayout="column">
+    <h1 class="label">{{ headerLabel }} with your account:</h1>
+    <div
+      id="customBtn"
+      fxLayout="row"
+      fxLayoutAlign="start start"
+      class="customGPlusSignIn"
+      (click)="authenticate('google')"
+    >
+      <div class="icon"></div>
+      <div
+        class="buttonText"
+        fxFlex="1 1 auto"
+        flexLayout="column"
+        fxLayoutAlign="start center"
+      >
+        <span>{{ headerLabel }} with Google</span>
+      </div>
+    </div>
+    <a
+      *ngIf="config.showNoAccountYet"
+      class="accountQuestion"
+      (click)="onNoAccountYetClick()"
+      >Don't have an account yet?</a
+    >
+    <a
+      *ngIf="config.showAlreadyHaveAnAccount"
+      class="accountQuestion"
+      (click)="onAlreadyHaveAnAccount()"
+      >Already have an account?</a
+    >
+  </div>
+</div>

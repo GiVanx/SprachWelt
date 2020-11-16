@@ -30,11 +30,10 @@ public class GameService {
 
         int wordPresenceProbability = (5 + level) * 10;
 
-        int i = 0;
         for (Word word : text.getWords()) {
 
             // check if this is a word
-            if (word.getContent().matches("^[a-zA-Z0-9\\-äöüÄÖÜß]*$")
+            if (word.getType() == WordType.WORD
                     && random.nextInt(100) < wordPresenceProbability) {
 
                 word.setStatus(WordStatus.IDLE);
@@ -43,7 +42,6 @@ public class GameService {
                 word.setStatus(WordStatus.ORIGINAL);
                 textWithGaps.add(word);
             }
-            ++i;
         }
 
         return Game.builder().text(text).missingWords(missingWords).textWithGaps(textWithGaps).build();
