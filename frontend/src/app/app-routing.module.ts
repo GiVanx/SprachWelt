@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ActiveGameResolverService } from './active-game-resolver.service';
 import { AuthGuardService } from './authentication/guard/auth-guard.service';
+import { ContactComponent } from './contact/contact.component';
 import { HomeComponent } from './home/home.component';
 import { AppLayoutComponent } from './layout/app-layout/app-layout.component';
 import { TextInputComponent } from './text-input/text-input.component';
@@ -15,6 +16,16 @@ const routes: Routes = [
       {
         path: '',
         component: HomeComponent,
+      },
+    ],
+  },
+  {
+    path: 'contact',
+    component: AppLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: ContactComponent,
       },
     ],
   },
