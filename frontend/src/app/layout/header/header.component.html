@@ -1,5 +1,7 @@
 <mat-toolbar [color]="'primary'">
-  <span>Logo</span>
+  <div id="logo" (click)="onLogoClick()">
+    Leexi<span id="kLogoLetter">K</span>a
+  </div>
   <span fxFlex="1 1 auto"></span>
   <span style="margin-right: 10px" *ngIf="user$ | async"
     >Welcome, {{ (user$ | async).name }}!</span
