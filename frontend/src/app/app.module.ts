@@ -25,6 +25,7 @@ import { AuthService } from './authentication/service/auth.service';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { HttpErrorInterceptor } from './authentication/interceptor/htttp-error.interceptor';
 import { JwtInterceptor } from './authentication/interceptor/jwt.interceptor';
+import { MatIconModule } from '@angular/material/icon';
 
 export function appInitializer(authService: AuthService) {
   return () =>
@@ -59,6 +60,7 @@ export function appInitializer(authService: AuthService) {
     FlexLayoutModule,
     AuthenticationModule,
     MatSnackBarModule,
+    MatIconModule,
   ],
   providers: [
     {

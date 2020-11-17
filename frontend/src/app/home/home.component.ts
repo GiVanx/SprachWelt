@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
       .pipe(first())
       .subscribe((user) => {
         if (!user) {
-          this.router.navigate(['login']);
+          this.router.navigate(['auth', 'login']);
         } else {
           this.gameRedirect();
         }

@@ -1,6 +1,12 @@
 @import "../../../theme-variables.scss";
 
 :host {
+  width: 100%;
   background-color: $primary;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+span {
+  color: white;
 }

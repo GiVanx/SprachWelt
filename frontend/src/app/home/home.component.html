@@ -1,1 +1,15 @@
-<button mat-raised-button color="primary" (click)="onPlayClick()">Play</button>
+<div
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  fxFlex="0.5 0.5 50%"
+  style="display: block"
+>
+  <div class="mat-display-2">
+    Learn to understand the context of a text passage, the way it is built, the
+    words that are being used and their correct position in the overall context.
+    Hit the <i>Play</i> button and start right away!
+  </div>
+  <button mat-fab color="primary" class="play-button" (click)="onPlayClick()">
+    <mat-icon>play_circle_outline</mat-icon>
+  </button>
+</div>
