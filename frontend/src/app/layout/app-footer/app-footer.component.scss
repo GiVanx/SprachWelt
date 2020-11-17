@@ -1,6 +1,17 @@
 @import "../../../theme-variables.scss";
 
 :host {
+  width: 100%;
   background-color: $primary;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+span {
+  color: white;
+}
+
+.link:hover {
+  cursor: pointer;
+  text-shadow: 5px 5px rgb(138, 138, 253);
 }
